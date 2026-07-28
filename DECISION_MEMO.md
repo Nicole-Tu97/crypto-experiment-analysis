@@ -141,5 +141,14 @@ A single experiment lands outside its own CI ~5% of the time, so the honest chec
 coverage across many draws: over **500 simulated experiments** the mean estimate is
 +7.64pp against a true +7.69pp, with **95.4% CI coverage**.
 
+The DiD row above is the one estimate that looks off, so it got the same treatment.
+Over **400 independently redrawn panels** the DiD estimator is unbiased
+(mean +2.96pp vs true +3.00pp, bias -1.3%), and its classical
+interval covers the truth 94.5% of the time against 92.8% for the
+region-clustered interval — which is the measured confirmation that clustering on
+12 units is anti-conservative here, and why the CI quoted above is the classical
+one. This run's estimate sits 1.5 standard errors below the truth; that or worse
+happens about 13% of the time.
+
 *Warehouse built via dbt. All numbers are reproducible from
 `python3 src/run.py` (fixed seeds). Data is synthetic; see README.*

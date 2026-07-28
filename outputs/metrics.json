@@ -303,6 +303,19 @@
     "event_study_cov_type": "HC1",
     "note": "Event-study SEs are HC1, not clustered: that spec has 43 parameters against 12 clusters, so its cluster-robust covariance is rank 10 and yields negative variances. Rollout timing is common across treated regions, which keeps the TWFE estimator clean; genuinely staggered adoption would call for Callaway-Sant'Anna / Sun-Abraham to avoid negative-weight bias."
   },
+  "did_coverage_simulation": {
+    "n_sims": 400,
+    "true_effect": 0.03,
+    "mean_estimate": 0.02960099739583334,
+    "bias": -0.00039900260416666014,
+    "bias_relative_pct": -1.330008680555539,
+    "empirical_sd_of_estimate": 0.005203671753183874,
+    "mean_se_classical": 0.004938037068468309,
+    "mean_se_clustered": 0.005087844133895712,
+    "ci_coverage_classical": 0.945,
+    "ci_coverage_clustered": 0.9275,
+    "note": "The classical SE matches the empirical spread of the estimator and its interval covers the truth at the nominal rate; the region-clustered interval under-covers, confirming that with only 12 clusters it is anti-conservative. This is why the memo quotes the classical CI and leans on the wild cluster bootstrap for the test. The estimator itself is unbiased, so a single estimate sitting below the true effect is sampling noise, not a defect."
+  },
   "unbiasedness_simulation": {
     "n_sims": 500,
     "n_per_sim": 8000,

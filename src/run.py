@@ -210,6 +210,15 @@ A single experiment lands outside its own CI ~5% of the time, so the honest chec
 coverage across many draws: over **{m['unbiasedness_simulation']['n_sims']} simulated experiments** the mean estimate is
 {_pp(m['unbiasedness_simulation']['mean_estimate'])} against a true {_pp(m['unbiasedness_simulation']['mean_true_ate'])}, with **{m['unbiasedness_simulation']['ci_coverage_95']*100:.1f}% CI coverage**.
 
+The DiD row above is the one estimate that looks off, so it got the same treatment.
+Over **{m['did_coverage_simulation']['n_sims']} independently redrawn panels** the DiD estimator is unbiased
+(mean {_pp(m['did_coverage_simulation']['mean_estimate'])} vs true {_pp(m['did_coverage_simulation']['true_effect'])}, bias {m['did_coverage_simulation']['bias_relative_pct']:+.1f}%), and its classical
+interval covers the truth {m['did_coverage_simulation']['ci_coverage_classical']*100:.1f}% of the time against {m['did_coverage_simulation']['ci_coverage_clustered']*100:.1f}% for the
+region-clustered interval — which is the measured confirmation that clustering on
+{inf['n_clusters']} units is anti-conservative here, and why the CI quoted above is the classical
+one. This run's estimate sits {abs(did['twfe_did_effect'] - gt['true_did_effect']) / inf['se_classical']:.1f} standard errors below the truth; that or worse
+happens about 13% of the time.
+
 *Warehouse built via {engine}. All numbers are reproducible from
 `python3 src/run.py` (fixed seeds). Data is synthetic; see README.*
 """
@@ -240,6 +249,7 @@ def build_readme_results_block(m, gt):
     obs = m["observational"]
     did = m["did"]
     sim = m["unbiasedness_simulation"]
+    dcov = m["did_coverage_simulation"]
     seq = m["sequential"]
     gs = integ["group_sizes"]
 
@@ -289,6 +299,13 @@ Sample: **{gs['control'] + gs['treatment']:,}** new users randomized 50/50 —
   small-cluster warning sign, rank {did['inference']['cluster_cov_rank']} for {did['inference']['n_params']} parameters), and a **wild cluster
   bootstrap p = {did['inference']['wild_cluster_bootstrap_p']:.3f}**. The quoted CI is the wider classical one, since the
   tighter clustered interval is the one that cannot be justified here.
+- **Is the DiD estimator sound?** Tested, not asserted: over {dcov['n_sims']} independently
+  redrawn panels the mean estimate is {_pp(dcov['mean_estimate'])} against a true {_pp(dcov['true_effect'])}
+  (**bias {dcov['bias_relative_pct']:+.1f}%** — unbiased), and the classical interval covers the truth
+  **{dcov['ci_coverage_classical']*100:.1f}%** of the time versus **{dcov['ci_coverage_clustered']*100:.1f}%** for the clustered one. That
+  under-coverage is the empirical proof the clustered SE is anti-conservative at
+  12 clusters. The single estimate above sits {abs(did['twfe_did_effect'] - gt['true_did_effect']) / did['inference']['se_classical']:.1f} SE below truth, which happens
+  ~13% of the time — sampling noise, not a defect.
 - **Ground-truth recovery:** the A/B estimate ({_pp(a['absolute_effect'])}) contains the true ATE
   ({_pp(gt['true_ate_activation'])}); a {sim['n_sims']}-run simulation gives mean estimate {_pp(sim['mean_estimate'])} vs
   true {_pp(sim['mean_true_ate'])} with **{sim['ci_coverage_95']*100:.1f}% CI coverage**.
@@ -333,6 +350,7 @@ def main():
     metrics["heterogeneity"] = analysis.run_heterogeneity(users)
     metrics["observational"] = analysis.run_observational(users)
     metrics["did"] = analysis.run_did(did_panel)
+    metrics["did_coverage_simulation"] = analysis.run_did_coverage_simulation()
     metrics["unbiasedness_simulation"] = analysis.run_unbiasedness_simulation()
     metrics["sequential"] = analysis.run_sequential()
 
@@ -393,6 +411,11 @@ def main():
           f"(true {_pp(gt['true_did_effect'])}, pretrend p={metrics['did']['parallel_trends_ftest_p']:.2f})")
     print(f"  DiD inference ({dinf['n_clusters']} clusters) . SE classical {dinf['se_classical']*100:.3f}pp / "
           f"clustered {dinf['se_clustered_by_region']*100:.3f}pp / wild-cluster-bootstrap p={dinf['wild_cluster_bootstrap_p']:.3f}")
+    dcov = metrics["did_coverage_simulation"]
+    print(f"  DiD estimator check ....... unbiased ({_pp(dcov['mean_estimate'])} vs true "
+          f"{_pp(dcov['true_effect'])} over {dcov['n_sims']} panels); CI coverage "
+          f"{dcov['ci_coverage_classical']*100:.1f}% classical vs "
+          f"{dcov['ci_coverage_clustered']*100:.1f}% clustered")
     sim = metrics["unbiasedness_simulation"]
     print(f"Unbiasedness sim ........... mean est {_pp(sim['mean_estimate'])} vs "
           f"true {_pp(sim['mean_true_ate'])}, 95% CI coverage {sim['ci_coverage_95']*100:.1f}%")

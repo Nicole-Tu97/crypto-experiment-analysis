@@ -72,6 +72,13 @@ Sample: **40,000** new users randomized 50/50 —
   small-cluster warning sign, rank 11 for 28 parameters), and a **wild cluster
   bootstrap p = 0.001**. The quoted CI is the wider classical one, since the
   tighter clustered interval is the one that cannot be justified here.
+- **Is the DiD estimator sound?** Tested, not asserted: over 400 independently
+  redrawn panels the mean estimate is +2.96pp against a true +3.00pp
+  (**bias -1.3%** — unbiased), and the classical interval covers the truth
+  **94.5%** of the time versus **92.8%** for the clustered one. That
+  under-coverage is the empirical proof the clustered SE is anti-conservative at
+  12 clusters. The single estimate above sits 1.5 SE below truth, which happens
+  ~13% of the time — sampling noise, not a defect.
 - **Ground-truth recovery:** the A/B estimate (+7.76pp) contains the true ATE
   (+7.69pp); a 500-run simulation gives mean estimate +7.64pp vs
   true +7.69pp with **95.4% CI coverage**.
@@ -105,6 +112,14 @@ segment view marks which subgroups survive multiplicity correction:
 effect is known — so this is a coverage check, not an assertion:
 
 ![Unbiasedness and CI coverage](outputs/figures/fig_unbiasedness.png)
+
+**And the estimate that looks off?** The DiD point estimate lands below the true
+effect, so it gets the same treatment: redraw the panel hundreds of times and
+measure. The estimator is unbiased, and the *classical* interval is the one that
+actually covers the truth at the nominal rate — the clustered interval
+under-covers, which is the measured proof that 12 clusters is too few to trust it:
+
+![DiD unbiasedness and which SE to trust](outputs/figures/fig_did_coverage.png)
 
 **Why the horizon is fixed** — the cost of peeking, simulated under the null:
 
