@@ -142,6 +142,16 @@ python3 -m pytest tests -q               # or all three at once
 No network access, no external warehouse, no credentials. The only optional
 network call is the AI summary layer below, which is off unless you ask for it.
 
+**How reproducible, precisely.** The seeded data generation is stable across
+library versions — `numpy.random.Generator` guarantees its stream, so the
+synthetic dataset and every closed-form statistic (effects, CIs, p-values, SRM,
+CUPED, IPW, DiD) reproduce to display precision on NumPy 2.0 through 2.5. The one
+number that moves is the uplift model's Qini coefficient, which shifts in the
+third decimal (0.1484 → 0.1486) with the scikit-learn version, because
+gradient-boosting internals change between releases. Everything else differs only
+in floating-point summation noise (~1e-15 relative). Committed outputs come from
+the versions a fresh `pip install -r requirements.txt` resolves today.
+
 ---
 
 ## Data-modelling layer (dbt + DuckDB)

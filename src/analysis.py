@@ -662,7 +662,11 @@ def run_did(panel):
                  in es_model.params.index]
     if pre_terms:
         ftest = es_model.f_test(" , ".join(f"{p} = 0" for p in pre_terms))
-        pretrend_p = float(np.ravel(ftest.pvalue))
+        # Index the flattened array rather than calling float() on it: statsmodels
+        # returns the p-value as a 0-d or 1-element array depending on version, and
+        # float() on an ndim>0 array is deprecated in NumPy 1.25 and an error in
+        # NumPy 2.1+. Locally that was only a warning, so CI caught it first.
+        pretrend_p = float(np.ravel(ftest.pvalue)[0])
     else:
         pretrend_p = None
 
