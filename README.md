@@ -1,5 +1,7 @@
 # Recurring Buy: experiment + causal inference → ship decision
 
+[![CI](https://github.com/Nicole-Tu97/crypto-experiment-analysis/actions/workflows/ci.yml/badge.svg)](https://github.com/Nicole-Tu97/crypto-experiment-analysis/actions/workflows/ci.yml)
+
 An end-to-end **product experimentation and causal-inference** project for a
 crypto/fintech context. A crypto product team ships **Recurring Buy** (auto-invest)
 to new users and needs to know its causal effect on **7-day activation** (funded
