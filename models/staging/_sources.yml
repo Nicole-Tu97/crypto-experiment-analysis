@@ -1,0 +1,21 @@
+version: 2
+
+seeds:
+  - name: raw_users
+    description: "One row per randomised new user in the Recurring Buy experiment."
+    columns:
+      - name: user_id
+        tests: [unique, not_null]
+      - name: assignment
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["treatment", "control"]
+  - name: raw_activation
+    description: "7-day activation, adoption, retention and guardrail events."
+    columns:
+      - name: user_id
+        tests: [unique, not_null]
+  - name: raw_did_panel
+    description: "Region x week panel for the staggered-rollout DiD analysis."

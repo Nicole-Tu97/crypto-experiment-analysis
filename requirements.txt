@@ -1,0 +1,22 @@
+# Core analysis
+numpy>=1.24,<3
+pandas>=2.0,<3
+scipy>=1.10
+scikit-learn>=1.3
+statsmodels>=0.14
+matplotlib>=3.7
+
+# Data-modelling layer (SQL on an embedded warehouse)
+duckdb>=1.0
+
+# dbt (optional but preferred). If dbt is not installed, src/run.py automatically
+# falls back to the equivalent plain SQL in sql/build.sql and produces identical
+# marts (asserted by tests/test_warehouse_parity.py). Install these two for the
+# real dbt build:
+dbt-core>=1.7
+dbt-duckdb>=1.7
+
+# Optional: the AI-drafted stakeholder summary in src/ai_summary.py. Without this
+# package (or without ANTHROPIC_API_KEY and USE_LLM=1) the pipeline uses the
+# deterministic template and stays fully offline.
+anthropic>=0.40

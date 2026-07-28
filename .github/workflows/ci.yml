@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Unit tests (statistical helpers, multiplicity, AI guardrail)
+        run: python tests/test_experiment_stats.py
+
+      - name: Warehouse tests (dbt vs plain-SQL parity, mart invariants)
+        run: python tests/test_warehouse_parity.py
+
+      # The end-to-end run is the real test: it rebuilds the warehouse with dbt
+      # (including dbt data tests), recomputes every estimate, and regenerates
+      # the memo and the README results block. No API key is set, so the AI
+      # summary takes its deterministic path and CI stays offline.
+      - name: Full pipeline
+        run: python src/run.py
+
+      # If the committed README or memo disagrees with the committed metrics, the
+      # numbers in the repo are stale -- the exact bug the generated README block
+      # was introduced to stop. Regeneration (not float diffing) keeps this
+      # deterministic across platforms.
+      - name: Reports in sync with metrics
+        run: python tests/test_reports_in_sync.py
+
+      - name: Upload figures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: figures
+          path: outputs/figures/*.png

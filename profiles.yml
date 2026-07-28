@@ -1,0 +1,9 @@
+# Local, offline dbt profile. Uses DuckDB with an on-disk file in the repo.
+# No external warehouse, no credentials, no network access required.
+crypto_experiment:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "warehouse.duckdb"
+      threads: 4

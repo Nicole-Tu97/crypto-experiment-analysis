@@ -1,0 +1,24 @@
+# dbt / DuckDB build artifacts
+target/
+dbt_packages/
+logs/
+*.duckdb
+*.duckdb.wal
+# dbt's anonymous-usage id, machine-local
+.user.yml
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS
+.DS_Store
+
+# Generated seeds are re-created deterministically by src/run.py.
+# They are committed so the repo is browsable without running anything;
+# uncomment the next lines if you prefer to keep them out of git.
+# seeds/raw_users.csv
+# seeds/raw_activation.csv
+# seeds/raw_did_panel.csv

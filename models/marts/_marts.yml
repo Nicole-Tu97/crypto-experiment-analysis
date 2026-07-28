@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: mart_experiment_users
+    description: "One row per user: assignment, pre-period covariates, exposure, primary + guardrail metrics."
+    columns:
+      - name: user_id
+        tests: [unique, not_null]
+      - name: is_treatment
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+      - name: activated_7d
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+      - name: retained_7d
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+  - name: mart_did_panel
+    description: "Region x week panel ready for difference-in-differences."
+    columns:
+      - name: activation_rate
+        tests: [not_null]

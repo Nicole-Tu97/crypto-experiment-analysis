@@ -1,0 +1,333 @@
+{
+  "ground_truth": {
+    "seed": 20240700,
+    "n_users": 40000,
+    "true_ate_activation": 0.07690165802747286,
+    "true_ate_retention_itt": 0.09313087158974584,
+    "true_ate_support_contact": 0.0027656292715492197,
+    "true_ate_net_deposits": 3.4621947708700054,
+    "true_adoption_effect_on_retention_att": 0.13081119276429767,
+    "true_did_effect": 0.03,
+    "notes": "Synthetic data with known structure. ATE = mean(p1 - p0) over the population using generative probabilities. Estimators should recover these within confidence intervals."
+  },
+  "warehouse_engine": "dbt",
+  "integrity": {
+    "group_sizes": {
+      "control": 19910,
+      "treatment": 20090
+    },
+    "srm": {
+      "n_control": 19910,
+      "n_treatment": 20090,
+      "observed_treat_share": 0.50225,
+      "expected_treat_share": 0.5,
+      "chi2": 0.81,
+      "p_value": 0.36812025069351917,
+      "srm_flag": false
+    },
+    "covariate_balance_smd": {
+      "onboarding_minutes": 0.00959476907154169,
+      "country_tier2": -0.007409944722415783,
+      "android": 0.005475749269100817,
+      "channel_organic": -0.0006151476084607116,
+      "channel_paid": 0.007550485914285619,
+      "channel_referral": -0.009522535589885956,
+      "age_18-24": 0.001459339122725019,
+      "age_25-34": -0.012940997530163655,
+      "age_35-49": 0.0020540026687671437,
+      "age_50+": 0.01607234231788991
+    },
+    "max_abs_smd": 0.01607234231788991,
+    "balanced": true
+  },
+  "primary": {
+    "config": {
+      "alpha": 0.05,
+      "power": 0.8,
+      "mde_declared": 0.02,
+      "n_per_arm": 19910
+    },
+    "activation": {
+      "control_mean": 0.3407835258663988,
+      "treatment_mean": 0.41841712294673966,
+      "absolute_effect": 0.07763359708034084,
+      "relative_effect": 0.22780912569927578,
+      "ci_low": 0.06815336960320022,
+      "ci_high": 0.08711382455748147,
+      "ci_halfwidth": 0.009480227477140621,
+      "se": 0.004836939633544007,
+      "p_value": 1.3656769992826042e-57,
+      "n_control": 19910,
+      "n_treatment": 20090
+    },
+    "retention": {
+      "control_mean": 0.36956303365143145,
+      "treatment_mean": 0.46212045793927325,
+      "absolute_effect": 0.0925574242878418,
+      "relative_effect": 0.25045098091477713,
+      "ci_low": 0.08294069983525776,
+      "ci_high": 0.10217414874042585,
+      "ci_halfwidth": 0.009616724452584054,
+      "se": 0.004906582227244761,
+      "p_value": 1.1459090312984218e-78,
+      "n_control": 19910,
+      "n_treatment": 20090
+    },
+    "guardrail_support_contact": {
+      "control_mean": 0.1018583626318433,
+      "treatment_mean": 0.103086112493778,
+      "absolute_effect": 0.0012277498619347044,
+      "relative_effect": 0.012053500863471383,
+      "ci_low": -0.004716177155221191,
+      "ci_high": 0.0071716768790906,
+      "ci_halfwidth": 0.0059439270171558955,
+      "se": 0.003032671551130956,
+      "p_value": 0.6856020864938877,
+      "n_control": 19910,
+      "n_treatment": 20090
+    },
+    "guardrail_net_deposits": {
+      "control_mean": 68.54506629834253,
+      "treatment_mean": 71.98204479840717,
+      "absolute_effect": 3.4369785000646402,
+      "relative_effect": 0.05014188016253693,
+      "ci_low": 2.3803310126746062,
+      "ci_high": 4.493625987454674,
+      "ci_halfwidth": 1.0566474873900342,
+      "se": 0.5390994523146643,
+      "p_value": 1.8446307912401813e-10,
+      "n_control": 19910,
+      "n_treatment": 20090
+    },
+    "power_mde": {
+      "control_rate": 0.3407835258663988,
+      "mde_achieved_at_80pct_power": 0.013308727324539343,
+      "power_to_detect_declared_mde": 0.9868750475637725,
+      "required_n_per_arm_for_declared_mde": 8817
+    },
+    "activation_bootstrap_ci": {
+      "lo": 0.06841761733175095,
+      "hi": 0.08680280275675582,
+      "mean": 0.07781727333728508
+    },
+    "practically_significant_vs_mde": true,
+    "coprimary_multiplicity": {
+      "correction": "Bonferroni over 2 co-primary metrics",
+      "alpha_per_metric": 0.025,
+      "activation_significant": true,
+      "retention_significant": true,
+      "note": "Guardrails are tested at the full alpha on purpose: correcting them would raise the bar for detecting harm."
+    }
+  },
+  "cuped": {
+    "theta": 0.0163315559127049,
+    "corr_outcome_covariate": 0.28643918302169996,
+    "unadjusted": {
+      "control_mean": 0.3407835258663988,
+      "treatment_mean": 0.41841712294673966,
+      "absolute_effect": 0.07763359708034084,
+      "relative_effect": 0.22780912569927578,
+      "ci_low": 0.06815336960320022,
+      "ci_high": 0.08711382455748147,
+      "ci_halfwidth": 0.009480227477140621,
+      "se": 0.004836939633544007,
+      "p_value": 1.3656769992826042e-57,
+      "n_control": 19910,
+      "n_treatment": 20090
+    },
+    "cuped_adjusted": {
+      "control_mean": 0.34145344681696077,
+      "treatment_mean": 0.4177532042744803,
+      "absolute_effect": 0.07629975745751955,
+      "relative_effect": 0.22345581269947093,
+      "ci_low": 0.067216959430523,
+      "ci_high": 0.08538255548451609,
+      "ci_halfwidth": 0.00908279802699654,
+      "se": 0.00463402553157559,
+      "p_value": 1.0357803706615143e-60,
+      "n_control": 19910,
+      "n_treatment": 20090
+    },
+    "se_unadjusted": 0.004836939633544007,
+    "se_cuped": 0.00463402553157559,
+    "variance_reduction_pct": 8.214197392119916,
+    "ci_width_reduction_pct": 4.19219318420777,
+    "ci_halfwidth_unadjusted_pp": 0.9480227477140621,
+    "ci_halfwidth_cuped_pp": 0.908279802699654
+  },
+  "heterogeneity": {
+    "segment_cate": {
+      "channel=organic": {
+        "effect": 0.1092174055869975,
+        "ci_low": 0.09489277150888076,
+        "ci_high": 0.12354203966511423,
+        "p_value": 6.98349502075778e-50,
+        "n": 18027,
+        "q_value_bh": 5.586796016606224e-49,
+        "significant_after_bh": true
+      },
+      "channel=paid": {
+        "effect": 0.053461670467816746,
+        "ci_low": 0.03884072236305778,
+        "ci_high": 0.06808261857257572,
+        "p_value": 8.514088774345921e-13,
+        "n": 16004,
+        "q_value_bh": 1.1352118365794562e-12,
+        "significant_after_bh": true
+      },
+      "channel=referral": {
+        "effect": 0.047958418380521894,
+        "ci_low": 0.023502378979654417,
+        "ci_high": 0.07241445778138937,
+        "p_value": 0.00012330359750394298,
+        "n": 5969,
+        "q_value_bh": 0.00012330359750394298,
+        "significant_after_bh": true
+      },
+      "onboarding_tier=high": {
+        "effect": 0.14916520242797393,
+        "ci_low": 0.12810661959167127,
+        "ci_high": 0.1702237852642766,
+        "p_value": 6.921441514012883e-43,
+        "n": 8131,
+        "q_value_bh": 2.7685766056051533e-42,
+        "significant_after_bh": true
+      },
+      "onboarding_tier=low": {
+        "effect": 0.0406443032002021,
+        "ci_low": 0.026873002465678312,
+        "ci_high": 0.05441560393472589,
+        "p_value": 7.537165976909433e-09,
+        "n": 15293,
+        "q_value_bh": 8.61390397361078e-09,
+        "significant_after_bh": true
+      },
+      "onboarding_tier=mid": {
+        "effect": 0.07475229672857137,
+        "ci_low": 0.05996046126037158,
+        "ci_high": 0.08954413219677115,
+        "p_value": 5.450910941400392e-23,
+        "n": 16576,
+        "q_value_bh": 1.0901821882800785e-22,
+        "significant_after_bh": true
+      },
+      "country_tier=1": {
+        "effect": 0.07499557458179901,
+        "ci_low": 0.0636030065190718,
+        "ci_high": 0.08638814264452621,
+        "p_value": 7.463872295289502e-38,
+        "n": 28030,
+        "q_value_bh": 1.9903659454105336e-37,
+        "significant_after_bh": true
+      },
+      "country_tier=2": {
+        "effect": 0.08336290698292492,
+        "ci_low": 0.06631687143797527,
+        "ci_high": 0.10040894252787458,
+        "p_value": 1.3076475158815685e-21,
+        "n": 11970,
+        "q_value_bh": 2.0922360254105096e-21,
+        "significant_after_bh": true
+      }
+    },
+    "segment_cate_note": "Exploratory subgroups (not pre-registered). q_value_bh is the Benjamini-Hochberg FDR-adjusted p-value across all 8 segments tested.",
+    "uplift_model": {
+      "type": "T-learner (GradientBoosting), evaluated out-of-sample",
+      "mean_predicted_uplift": 0.0789013156210726,
+      "observed_uplift_top_half": 0.11173074986581777,
+      "observed_uplift_bottom_half": 0.03214419279889985,
+      "qini_area_incremental_activations": 74.94511735294077,
+      "qini_coefficient_normalized": 0.14841089669769625,
+      "qini_coefficient_note": "Area between the Qini curve and the random-targeting line, divided by the total incremental activations at 100% targeting. 0 = no better than random; 0.5 = perfect sorting."
+    }
+  },
+  "observational": {
+    "question": "effect of adopting Recurring Buy on 7-day retention (treatment arm)",
+    "naive_diff": {
+      "control_mean": 0.36368411836806164,
+      "treatment_mean": 0.5918320258421781,
+      "absolute_effect": 0.22814790747411645,
+      "relative_effect": 0.6273243618607025,
+      "ci_low": 0.2145505682159744,
+      "ci_high": 0.2417452467322585,
+      "ci_halfwidth": 0.013597339258142053,
+      "se": 0.006937545467873967,
+      "p_value": 2.003237111659922e-226,
+      "n_control": 11422,
+      "n_treatment": 8668
+    },
+    "ipw_att": 0.13191672568327928,
+    "ipw_att_ci": [
+      0.11476193292242273,
+      0.14953112098500432
+    ],
+    "regression_adjusted_ame": 0.13767692329163597,
+    "n_adopters": 8668,
+    "n_non_adopters": 11422,
+    "assumptions": [
+      "conditional ignorability",
+      "positivity/overlap",
+      "SUTVA"
+    ]
+  },
+  "did": {
+    "twfe_did_effect": 0.022546666666666666,
+    "twfe_did_ci": [
+      0.01280638992511397,
+      0.03228694340821936
+    ],
+    "twfe_did_ci_basis": "classical (wider of the two; see inference.note)",
+    "twfe_did_p_value": 1.2907617782207318e-08,
+    "inference": {
+      "n_clusters": 12,
+      "se_classical": 0.004932948179622794,
+      "se_clustered_by_region": 0.003964400081389356,
+      "ci_classical": [
+        0.01280638992511397,
+        0.03228694340821936
+      ],
+      "ci_clustered": [
+        0.01477658528683587,
+        0.030316748046497463
+      ],
+      "p_classical": 9.526849363481218e-06,
+      "p_clustered": 1.2907617782207318e-08,
+      "wild_cluster_bootstrap_p": 0.001,
+      "wild_cluster_bootstrap_t_observed": 5.687283372964972,
+      "n_params": 28,
+      "cluster_cov_rank": 11,
+      "note": "Treatment is assigned at region level, so clustering by region is the default choice -- but with only 12 clusters the cluster-robust covariance is rank 11 for 28 parameters, and it makes the SE SMALLER than the classical one rather than larger. That is the opposite of the usual Bertrand-Duflo-Mullainathan result and signals downward bias from too few clusters, not a genuine precision gain. So the headline CI quoted is the CLASSICAL (wider) one, and the wild cluster bootstrap p-value is the test the conclusion rests on. The effect is significant under all three, so the choice does not change the decision."
+    },
+    "parallel_trends_ftest_p": 0.9709900179460917,
+    "parallel_trends_ok": true,
+    "event_study_cov_type": "HC1",
+    "note": "Event-study SEs are HC1, not clustered: that spec has 43 parameters against 12 clusters, so its cluster-robust covariance is rank 10 and yields negative variances. Rollout timing is common across treated regions, which keeps the TWFE estimator clean; genuinely staggered adoption would call for Callaway-Sant'Anna / Sun-Abraham to avoid negative-weight bias."
+  },
+  "unbiasedness_simulation": {
+    "n_sims": 500,
+    "n_per_sim": 8000,
+    "mean_true_ate": 0.07686299446984177,
+    "mean_estimate": 0.07638331260331603,
+    "bias": -0.00047968186652573575,
+    "ci_coverage_95": 0.954
+  },
+  "sequential": {
+    "nominal_alpha": 0.05,
+    "fixed_horizon_fpr": 0.050666666666666665,
+    "naive_peeking_fpr": 0.203,
+    "n_looks": 10,
+    "n_sims": 3000,
+    "remedy": "Pre-commit to a fixed horizon, or use an alpha-spending boundary (O'Brien-Fleming) / always-valid CIs (mSPRT) if continuous monitoring is required."
+  },
+  "unbiasedness_check": {
+    "activation_true": 0.07690165802747286,
+    "activation_est": 0.07763359708034084,
+    "activation_true_in_ci": true,
+    "retention_true": 0.09313087158974584,
+    "retention_est": 0.0925574242878418,
+    "retention_true_in_ci": true,
+    "did_true": 0.03,
+    "did_est": 0.022546666666666666,
+    "did_true_in_ci": true
+  }
+}

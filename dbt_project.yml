@@ -1,0 +1,40 @@
+name: "crypto_experiment"
+version: "1.0.0"
+config-version: 2
+
+profile: "crypto_experiment"
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  crypto_experiment:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table
+
+seeds:
+  crypto_experiment:
+    raw_users:
+      +column_types:
+        user_id: integer
+        signup_day: integer
+        country_tier: integer
+    raw_activation:
+      +column_types:
+        user_id: integer
+        activated_7d: integer
+        adopted_recurring_buy: integer
+        retained_7d: integer
+        support_contact_7d: integer
+    raw_did_panel:
+      +column_types:
+        region_id: integer
+        week: integer
+        treated_region: integer
+        post: integer
+        rollout_week: integer
+        n_users: integer
