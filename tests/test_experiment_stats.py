@@ -113,6 +113,24 @@ def test_cuped_ci_reduction_is_smaller_than_variance_reduction():
     assert abs(ci_red - (1 - np.sqrt(1 - var_red))) < 1e-6
 
 
+def test_trapezoid_matches_known_integrals():
+    """Locks the hand-written integral used by the Qini curve.
+
+    It replaced `np.trapz`, which was deprecated in NumPy 2.0 and removed in 2.1 --
+    so the same code passed locally and crashed in CI on a newer NumPy. This test
+    pins the replacement against integrals with closed-form answers.
+    """
+    import analysis
+
+    x = np.linspace(0, 1, 2001)
+    assert abs(analysis._trapezoid(x, x) - 0.5) < 1e-6          # ∫x dx = 1/2
+    assert abs(analysis._trapezoid(np.ones_like(x), x) - 1.0) < 1e-12
+    assert analysis._trapezoid(np.zeros_like(x), x) == 0.0
+    # non-uniform spacing must still be handled correctly
+    xu = np.array([0.0, 0.1, 0.5, 1.0])
+    assert abs(analysis._trapezoid(xu, xu) - 0.5) < 1e-9
+
+
 def test_benjamini_hochberg_controls_and_orders():
     # A clear signal survives; pure noise does not.
     q, rejected = es.benjamini_hochberg([1e-8, 0.001, 0.20, 0.40, 0.80])

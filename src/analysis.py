@@ -419,9 +419,22 @@ def _qini_curve(y, w, uplift):
     n = len(y)
     x = np.arange(1, n + 1) / n
     rand = np.linspace(0, qini[-1], n)
-    area = float(np.trapz(qini - rand, x))
+    area = _trapezoid(qini - rand, x)
     coef = float(area / qini[-1]) if qini[-1] != 0 else 0.0
     return x, qini, area, coef
+
+
+def _trapezoid(f, x):
+    """Trapezoidal integral of f over x.
+
+    Written out rather than calling numpy: `np.trapz` was deprecated in NumPy 2.0
+    and removed in 2.1, so it works on some installs and raises AttributeError on
+    others. Four lines of arithmetic is cheaper than a version guard and cannot
+    break again.
+    """
+    f = np.asarray(f, dtype=float)
+    x = np.asarray(x, dtype=float)
+    return float(np.sum((f[1:] + f[:-1]) / 2.0 * np.diff(x)))
 
 
 # ======================================================================== #
