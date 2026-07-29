@@ -77,7 +77,7 @@ genuine test rather than a formality: SRM χ² p = 0.996, max |SMD| = 0.016 acro
 
 The uplift model **failed** on real data, and that is stated rather than dropped.
 Ranking held-out customers by predicted uplift separates the top half from the
-bottom half by only **+1.04pp, 95% CI [−1.21, +3.30], p = 0.37** — indistinguishable
+bottom half by only **+1.04pp, 95% CI [−1.21, +3.30], p = 0.365** — indistinguishable
 from random ranking.
 
 Before blaming the model, the alternative was tested: splitting on prior spend

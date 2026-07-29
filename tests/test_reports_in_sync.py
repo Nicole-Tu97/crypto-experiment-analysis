@@ -100,7 +100,12 @@ def test_readme_real_data_numbers_match_the_json():
         "srm p-value": f"{integ['srm_primary_contrast']['p_value']:.3f}",
         "max smd": f"{integ['max_abs_smd']:.3f}",
         "uplift separation": f"{lm['separation_pp']*100:+.2f}pp",
+        # 3 decimals on purpose: this p-value is 0.3648, which sits close enough to
+        # the 2-decimal boundary that it was written as "0.37" once. Quoting 3
+        # decimals removes the ambiguity instead of relying on rounding luck.
+        "uplift p-value": f"p = {lm['separation_p_value']:.3f}",
         "single-covariate separation": f"{ref['separation_pp']*100:+.2f}pp",
+        "single-covariate p-value": f"p = {ref['separation_p_value']:.3f}",
         "cuped variance reduction": f"{cuped['variance_reduction_pct']:.2f}%",
     }
     readme = _read("README.md")
