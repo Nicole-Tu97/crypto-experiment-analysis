@@ -23,6 +23,95 @@ committed to *before* seeing outcomes) → [`DECISION_MEMO.md`](DECISION_MEMO.md
 > effect is known**, so every estimate is checked against ground truth — including
 > a 500-run Monte-Carlo showing the estimator is unbiased with ~95% CI coverage.
 > This is a methods showcase; the numbers are illustrative, the methods are real.
+>
+> Synthetic data invites a fair objection — *"you proved your methods work on data
+> you generated to make them work."* So the same estimators are also run against a
+> **real randomized experiment** and checked against its experimental benchmark:
+> see [Real-data validation](#real-data-validation-the-same-estimators-on-a-real-experiment).
+
+---
+
+## Real-data validation: the same estimators on a real experiment
+
+Full output: [`outputs/real_data_validation.md`](outputs/real_data_validation.md) ·
+run it with `python3 src/real_data_validation.py`
+
+The synthetic analysis can prove an estimator is unbiased, because the truth is
+known. What it cannot prove is that the estimator works on data nobody designed.
+So the same tested helpers are run against the **Hillstrom MineThatData e-mail
+experiment** — 64,000 real customers, genuinely randomized into three arms, real
+outcomes.
+
+A real randomized experiment supplies a gold-standard causal estimate, which
+enables a much sharper test than "do the numbers look plausible":
+
+1. Take the experimental contrast as the benchmark — **the real answer**.
+2. **Deliberately destroy the randomization**: keep treated customers with a
+   probability that depends on their covariates and control customers with the
+   complementary probability, manufacturing exactly the self-selection that makes
+   observational data hard.
+3. Estimate the effect on that confounded sample naively (should be biased) and
+   with inverse-propensity weighting (should recover the benchmark).
+
+| Estimate | Effect on visit rate | Bias vs benchmark |
+|---|--:|--:|
+| **Randomized experiment (benchmark)** | **+7.659pp** | — |
+| Naive difference on confounded sample | +11.177pp | **+3.518pp** (46% overstated) |
+| **Inverse-propensity weighted** | **+7.518pp** | **−0.141pp** |
+| Regression-adjusted (cross-check) | +7.653pp | −0.006pp |
+
+**And not on one lucky draw.** Repeating the whole break-it-then-fix-it exercise
+across **30 independent confounding draws**: IPW removes **90.8% of the bias on
+average and 73.2% in the worst case**, with mean residual bias of **+0.073pp**
+against a 7.659pp benchmark. Only the selection mechanism is synthetic — the
+outcomes and the covariate-outcome structure that decide whether reweighting can
+work are entirely real.
+
+![Real-data validation](outputs/figures/fig_real_data_validation.png)
+
+The integrity checks also pass on somebody else's 2008 randomization, which is a
+genuine test rather than a formality: SRM χ² p = 0.996, max |SMD| = 0.016 across
+18 covariates.
+
+### A negative result, reported as one
+
+The uplift model **failed** on real data, and that is stated rather than dropped.
+Ranking held-out customers by predicted uplift separates the top half from the
+bottom half by only **+1.04pp, 95% CI [−1.21, +3.30], p = 0.37** — indistinguishable
+from random ranking.
+
+Before blaming the model, the alternative was tested: splitting on prior spend
+history alone — the single covariate the segment analysis shows carries the most
+signal — separates **+1.98pp, p = 0.086**, also not significant. Real segment
+effects span just **6.15pp to 9.90pp** around a 7.66pp main effect. So the
+heterogeneity is too weak to target on; it is the **data, not the model**.
+
+That matters for reading the synthetic results honestly: the 3.5× uplift
+separation there exists because the generator was *written* to contain it
+(`tau = 0.25 + 0.18·engagement + 0.22·organic`). Real heterogeneity did not
+cooperate. Normalized Qini is **0.020** on real data against **0.149** on
+synthetic.
+
+The business reading is still actionable, just not the hoped-for one: this e-mail
+works about equally on everyone, so the decision is *send to all or none* rather
+than *target a segment* — and with conversion near 1% in both arms, the real
+question is whether **+$0.77** incremental spend per customer covers the send cost.
+
+**CUPED is a near-null too, for the same honest reason.** The only pre-period
+covariate available correlates just **+0.067** with visiting, so CUPED cut variance
+by **0.44%** versus ~8% on synthetic data (where the covariate correlated 0.29).
+CUPED buys precision strictly in proportion to the pre-experiment signal you have.
+
+### What this does and does not establish
+
+**Does:** the estimators are not tuned to one generator. They pass integrity checks
+on a real randomization, reproduce the documented Hillstrom effects, recover a real
+experimental benchmark from a confounded sample across 30 draws, and correctly
+report a null where there is nothing to find.
+
+**Does not:** establish unbiasedness or CI coverage over repeated draws — there is
+one realisation of this experiment and no known population truth. That is what the
+synthetic analysis is for. The two are complementary, not interchangeable.
 
 ---
 
@@ -154,6 +243,8 @@ python3 tests/test_experiment_stats.py   # stats helpers, multiplicity, AI guard
 python3 tests/test_warehouse_parity.py   # dbt vs plain-SQL parity, mart invariants
 python3 tests/test_reports_in_sync.py    # README + memo match metrics.json
 python3 -m pytest tests -q               # or all three at once
+
+python3 src/real_data_validation.py      # same estimators vs a real experiment
 ```
 
 No network access, no external warehouse, no credentials. The only optional
@@ -297,6 +388,7 @@ crypto_experiment_analysis/
 │   ├── build_warehouse.py    # dbt-or-fallback warehouse build
 │   ├── experiment_stats.py   # pure, tested statistical helpers
 │   ├── analysis.py           # all analysis blocks + figures
+│   ├── real_data_validation.py  # same estimators vs a REAL experiment (Hillstrom)
 │   ├── ai_summary.py         # LLM stakeholder summary + numeric guardrail
 │   ├── viz.py                # shared plotting style (CVD-safe palette)
 │   └── run.py                # single entry point
@@ -307,6 +399,7 @@ crypto_experiment_analysis/
 └── outputs/
     ├── metrics.json          # every number, machine-readable
     ├── ground_truth.json     # the known synthetic effects
+    ├── real_data_validation.{json,md}  # real-experiment validation results
     ├── exec_summary.md       # plain-language summary (AI-drafted or template)
     ├── ai_summary_audit.json # what the numeric guardrail checked and decided
     └── figures/*.png

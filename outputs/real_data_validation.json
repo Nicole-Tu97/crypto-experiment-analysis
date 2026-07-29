@@ -1,0 +1,357 @@
+{
+  "dataset": {
+    "name": "Kevin Hillstrom, MineThatData E-Mail Analytics Challenge (2008)",
+    "url": "https://hillstorm1.s3.us-east-2.amazonaws.com/hillstorm_no_indices.csv.gz",
+    "n_rows": 64000,
+    "primary_contrast": "Mens E-Mail vs No E-Mail"
+  },
+  "integrity": {
+    "arm_sizes": {
+      "Womens E-Mail": 21387,
+      "Mens E-Mail": 21307,
+      "No E-Mail": 21306
+    },
+    "srm_primary_contrast": {
+      "n_control": 21306,
+      "n_treatment": 21307,
+      "observed_treat_share": 0.5000117335085538,
+      "expected_treat_share": 0.5,
+      "chi2": 2.346701710745547e-05,
+      "p_value": 0.9961348415003554,
+      "srm_flag": false
+    },
+    "covariate_balance_smd": {
+      "history": 0.00761286832154239,
+      "recency": 0.006831532454259954,
+      "mens": -0.0045823256374879625,
+      "womens": 0.007588929691887142,
+      "newbie": -0.0008918953696535328,
+      "channel=Multichannel": -0.004181536419632754,
+      "channel=Phone": -0.008275992307117473,
+      "channel=Web": 0.011013588354428299,
+      "zip_code=Rural": 0.01365900039927897,
+      "zip_code=Surburban": -0.01174335672606268,
+      "zip_code=Urban": 0.0019722315768513645,
+      "history_segment=1) $0 - $100": 0.010916720554376393,
+      "history_segment=2) $100 - $200": -0.016359543173779502,
+      "history_segment=3) $200 - $350": 0.005470713585408414,
+      "history_segment=4) $350 - $500": -0.004257423463175294,
+      "history_segment=5) $500 - $750": -0.009740129383845251,
+      "history_segment=6) $750 - $1,000": 0.006073217597584176,
+      "history_segment=7) $1,000 +": 0.015834592826810663
+    },
+    "max_abs_smd": 0.016359543173779502,
+    "balanced": true
+  },
+  "effects": {
+    "alpha": 0.05,
+    "alpha_bonferroni_2_arms": 0.025,
+    "arms": {
+      "Mens E-Mail": {
+        "visit_primary": {
+          "control_mean": 0.10616727682343002,
+          "treatment_mean": 0.18275684047496127,
+          "absolute_effect": 0.07658956365153125,
+          "relative_effect": 0.721404616781399,
+          "ci_low": 0.06995350121810838,
+          "ci_high": 0.08322562608495411,
+          "ci_halfwidth": 0.006636062433422868,
+          "se": 0.0033858083545245127,
+          "p_value": 5.685165482802319e-112,
+          "n_control": 21306,
+          "n_treatment": 21307
+        },
+        "conversion_coprimary": {
+          "control_mean": 0.005726086548390125,
+          "treatment_mean": 0.01253109306800582,
+          "absolute_effect": 0.006805006519615695,
+          "relative_effect": 1.188421876286328,
+          "ci_low": 0.005000171380452313,
+          "ci_high": 0.008609841658779076,
+          "ci_halfwidth": 0.001804835139163382,
+          "se": 0.000920851175531638,
+          "p_value": 1.5232235005955425e-13,
+          "n_control": 21306,
+          "n_treatment": 21307
+        },
+        "spend_guardrail": {
+          "control_mean": 0.6527893551112361,
+          "treatment_mean": 1.422616511005773,
+          "absolute_effect": 0.7698271558945368,
+          "relative_effect": 1.1792887703620063,
+          "ci_low": 0.4851397325684076,
+          "ci_high": 1.0545145792206658,
+          "ci_halfwidth": 0.2846874233261292,
+          "se": 0.14524656024868676,
+          "p_value": 1.1638149682254823e-07,
+          "n_control": 21306,
+          "n_treatment": 21307
+        },
+        "visit_significant_after_bonferroni": true,
+        "conversion_significant_after_bonferroni": true
+      },
+      "Womens E-Mail": {
+        "visit_primary": {
+          "control_mean": 0.10616727682343002,
+          "treatment_mean": 0.151400383410483,
+          "absolute_effect": 0.045233106587052985,
+          "relative_effect": 0.4260550702669102,
+          "ci_low": 0.03889382581264261,
+          "ci_high": 0.05157238736146336,
+          "ci_halfwidth": 0.006339280774410371,
+          "se": 0.0032343863583279126,
+          "p_value": 3.1824031593349214e-44,
+          "n_control": 21306,
+          "n_treatment": 21387
+        },
+        "conversion_coprimary": {
+          "control_mean": 0.005726086548390125,
+          "treatment_mean": 0.008837144059475383,
+          "absolute_effect": 0.003111057511085258,
+          "relative_effect": 0.5433130436982172,
+          "ci_low": 0.0014986778214022348,
+          "ci_high": 0.004723437200768281,
+          "ci_halfwidth": 0.001612379689683023,
+          "se": 0.0008226578153482761,
+          "p_value": 0.00015710512910668448,
+          "n_control": 21306,
+          "n_treatment": 21387
+        },
+        "spend_guardrail": {
+          "control_mean": 0.6527893551112361,
+          "treatment_mean": 1.0772015710478329,
+          "absolute_effect": 0.4244122159365967,
+          "relative_effect": 0.6501518638646863,
+          "ci_low": 0.16895678988377877,
+          "ci_high": 0.6798676419894147,
+          "ci_halfwidth": 0.25545542605281796,
+          "se": 0.13033285852919116,
+          "p_value": 0.0011293971023632475,
+          "n_control": 21306,
+          "n_treatment": 21387
+        },
+        "visit_significant_after_bonferroni": true,
+        "conversion_significant_after_bonferroni": true
+      }
+    }
+  },
+  "cuped": {
+    "covariate": "history (prior 12-month spend)",
+    "theta": 9.134195036168932e-05,
+    "corr_outcome_covariate": 0.06666246893410172,
+    "unadjusted_effect": 0.07658956365153125,
+    "cuped_effect": 0.07641114745941802,
+    "variance_reduction_pct": 0.43946270170331925,
+    "ci_width_reduction_pct": 0.21699843176606892,
+    "note": "Gain is small because the available pre-period covariates are weak predictors of visiting. Reported rather than dropped: it is the realistic contrast with the synthetic run, where a stronger pre-period covariate produced a much larger reduction."
+  },
+  "segments": {
+    "segments": {
+      "channel=Multichannel": {
+        "effect": 0.08293672314062261,
+        "ci_low": 0.06259667976719277,
+        "ci_high": 0.10327676651405246,
+        "p_value": 1.841081833397071e-15,
+        "n": 5183,
+        "q_value_bh": 2.7616227500956064e-15,
+        "significant_after_bh": true
+      },
+      "channel=Phone": {
+        "effect": 0.07560427135853316,
+        "ci_low": 0.06614767667153112,
+        "ci_high": 0.0850608660455352,
+        "p_value": 9.064385742102263e-55,
+        "n": 18567,
+        "q_value_bh": 6.798289306576698e-54,
+        "significant_after_bh": true
+      },
+      "channel=Web": {
+        "effect": 0.07556315210258555,
+        "ci_low": 0.06525205585966666,
+        "ci_high": 0.08587424834550443,
+        "p_value": 3.465177943599554e-46,
+        "n": 18863,
+        "q_value_bh": 8.662944858998885e-46,
+        "significant_after_bh": true
+      },
+      "zip_code=Rural": {
+        "effect": 0.07339826795812915,
+        "ci_low": 0.05424415577051052,
+        "ci_high": 0.09255238014574778,
+        "p_value": 8.677374825310259e-14,
+        "n": 6382,
+        "q_value_bh": 1.0846718531637823e-13,
+        "significant_after_bh": true
+      },
+      "zip_code=Surburban": {
+        "effect": 0.07433718665294288,
+        "ci_low": 0.0646653805768157,
+        "ci_high": 0.08400899272907006,
+        "p_value": 7.569161037881486e-51,
+        "n": 19126,
+        "q_value_bh": 2.270748311364446e-50,
+        "significant_after_bh": true
+      },
+      "zip_code=Urban": {
+        "effect": 0.07964111521494538,
+        "ci_low": 0.06941779707785778,
+        "ci_high": 0.08986443335203298,
+        "p_value": 6.424336334955637e-52,
+        "n": 17105,
+        "q_value_bh": 3.2121681674778185e-51,
+        "significant_after_bh": true
+      },
+      "newbie=0": {
+        "effect": 0.07783285081536925,
+        "ci_low": 0.06772001135980164,
+        "ci_high": 0.08794569027093686,
+        "p_value": 6.986559274684661e-51,
+        "n": 21232,
+        "q_value_bh": 2.270748311364446e-50,
+        "significant_after_bh": true
+      },
+      "newbie=1": {
+        "effect": 0.0753050156199182,
+        "ci_low": 0.06676413610820273,
+        "ci_high": 0.08384589513163368,
+        "p_value": 4.97210037349229e-66,
+        "n": 21381,
+        "q_value_bh": 7.458150560238434e-65,
+        "significant_after_bh": true
+      },
+      "history_segment=1) $0 - $100": {
+        "effect": 0.06855191712613816,
+        "ci_low": 0.058364243863561024,
+        "ci_high": 0.0787395903887153,
+        "p_value": 3.7336916480776975e-39,
+        "n": 15336,
+        "q_value_bh": 8.000767817309352e-39,
+        "significant_after_bh": true
+      },
+      "history_segment=2) $100 - $200": {
+        "effect": 0.0691095120991766,
+        "ci_low": 0.05585018803950657,
+        "ci_high": 0.08236883615884663,
+        "p_value": 2.052530792264232e-24,
+        "n": 9527,
+        "q_value_bh": 3.848495235495435e-24,
+        "significant_after_bh": true
+      },
+      "history_segment=3) $200 - $350": {
+        "effect": 0.08439790664548161,
+        "ci_low": 0.06823946770728997,
+        "ci_high": 0.10055634558367324,
+        "p_value": 2.978916871421089e-24,
+        "n": 8134,
+        "q_value_bh": 4.964861452368481e-24,
+        "significant_after_bh": true
+      },
+      "history_segment=4) $350 - $500": {
+        "effect": 0.08920128027933366,
+        "ci_low": 0.06544443403780989,
+        "ci_high": 0.11295812652085743,
+        "p_value": 2.4694156960483316e-13,
+        "n": 4221,
+        "q_value_bh": 2.84932580313269e-13,
+        "significant_after_bh": true
+      },
+      "history_segment=5) $500 - $750": {
+        "effect": 0.09895180279003762,
+        "ci_low": 0.07397494484718933,
+        "ci_high": 0.12392866073288591,
+        "p_value": 1.1034303579770616e-14,
+        "n": 3249,
+        "q_value_bh": 1.5046777608778112e-14,
+        "significant_after_bh": true
+      },
+      "history_segment=6) $750 - $1,000": {
+        "effect": 0.06149767330390843,
+        "ci_low": 0.018886917526525472,
+        "ci_high": 0.10410842908129139,
+        "p_value": 0.004900194932290892,
+        "n": 1266,
+        "q_value_bh": 0.004900194932290892,
+        "significant_after_bh": true
+      },
+      "history_segment=7) $1,000 +": {
+        "effect": 0.09706564986737401,
+        "ci_low": 0.043380857641449166,
+        "ci_high": 0.15075044209329885,
+        "p_value": 0.00048796833639018017,
+        "n": 880,
+        "q_value_bh": 0.0005228232175609073,
+        "significant_after_bh": true
+      }
+    },
+    "n_tested": 15,
+    "n_significant_after_bh": 15
+  },
+  "uplift_model": {
+    "type": "T-learner (GradientBoosting), evaluated out-of-sample",
+    "n_train": 27698,
+    "n_test": 14915,
+    "learned_model": {
+      "observed_uplift_top_half": 0.0826809686024251,
+      "observed_uplift_bottom_half": 0.07224679553810287,
+      "separation_pp": 0.010434173064322233,
+      "separation_se_pp": 0.011514563120094705,
+      "separation_ci": [
+        -0.01213437065106339,
+        0.033002716779707855
+      ],
+      "separation_p_value": 0.3648448955872954,
+      "separation_significant": false
+    },
+    "single_covariate_reference": {
+      "covariate": "history (prior 12-month spend)",
+      "observed_uplift_top_half": 0.08736416335410382,
+      "observed_uplift_bottom_half": 0.06759656652360516,
+      "separation_pp": 0.019767596830498668,
+      "separation_se_pp": 0.011502262821991575,
+      "separation_ci": [
+        -0.002776838300604819,
+        0.04231203196160216
+      ],
+      "separation_p_value": 0.08569027415578366,
+      "separation_significant": false
+    },
+    "qini_coefficient_normalized": 0.019993251277169694,
+    "qini_area_incremental_visits": 11.553927515858032,
+    "verdict": "NOT actionable: the top-vs-bottom gap is within noise, so this dataset's heterogeneity is too weak to target on at this sample size",
+    "note": "Contrast with the synthetic run, where a ~3.5x separation was planted in the generator by construction. Real heterogeneity here spans only ~3.8pp across segments around a ~7.7pp main effect, which is the honest reason the uplift model has little to find."
+  },
+  "ipw_benchmark": {
+    "experimental_benchmark": 0.07658956365153125,
+    "experimental_benchmark_ci": [
+      0.06995350121810838,
+      0.08322562608495411
+    ],
+    "n_randomized": 42613,
+    "n_confounded_subsample": 21184,
+    "naive_on_confounded": 0.11176517159429054,
+    "naive_bias": 0.0351756079427593,
+    "ipw_estimate": 0.07518445901845437,
+    "ipw_bias": -0.001405104633076873,
+    "ipw_ci": [
+      0.06343200082226785,
+      0.08668764566093735
+    ],
+    "ipw_recovers_benchmark": true,
+    "regression_adjusted_ame": 0.07652923991253825,
+    "confounding_bias_removed_pct": 96.00545743128768,
+    "robustness_across_30_confounding_draws": {
+      "n_draws": 30,
+      "mean_naive_bias": 0.03680221609794305,
+      "mean_ipw_residual_bias": 0.0007334960606753519,
+      "ipw_residual_bias_range": [
+        -0.007327201661329608,
+        0.010616945420798607
+      ],
+      "mean_bias_removed_pct": 90.80225248523087,
+      "worst_bias_removed_pct": 73.15132992269334,
+      "best_bias_removed_pct": 99.33912161719087,
+      "note": "One confounding draw could be lucky, so the exercise is repeated across 30 independent selection draws. The claim to make is the worst case, not the headline case."
+    },
+    "note": "Only the selection mechanism is synthetic. Outcomes, covariates and their relationships are real, and the benchmark is a genuine randomized contrast -- so this tests whether IPW recovers a real answer, which is the thing the synthetic analysis cannot demonstrate."
+  }
+}

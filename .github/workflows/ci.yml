@@ -41,6 +41,13 @@ jobs:
       - name: Full pipeline
         run: python src/run.py
 
+      # Runs the same estimators against a real randomized experiment. This is
+      # the only step that touches the network; the module exits 0 with a clear
+      # SKIP if the dataset host is unreachable, so an outage cannot turn into a
+      # spurious red build.
+      - name: Real-data validation (Hillstrom experiment)
+        run: python src/real_data_validation.py
+
       - name: Upload figures
         if: always()
         uses: actions/upload-artifact@v7

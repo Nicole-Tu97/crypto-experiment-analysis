@@ -113,6 +113,48 @@ def test_cuped_ci_reduction_is_smaller_than_variance_reduction():
     assert abs(ci_red - (1 - np.sqrt(1 - var_red))) < 1e-6
 
 
+def test_ipw_ate_removes_known_confounding():
+    """IPW must recover the true ATE where a naive comparison is biased.
+
+    Treatment depends on a covariate that also drives the outcome, so the raw
+    difference in means is confounded by construction. Reweighting by the inverse
+    propensity should close most of that gap.
+    """
+    rng = np.random.default_rng(7)
+    n = 60_000
+    x = rng.normal(0, 1, n)
+    propensity = 1 / (1 + np.exp(-x))            # confounded assignment
+    treat = (rng.random(n) < propensity).astype(float)
+    true_ate = 0.20
+    y = 0.5 + 0.8 * x + true_ate * treat + rng.normal(0, 0.5, n)
+
+    naive = y[treat == 1].mean() - y[treat == 0].mean()
+    ipw = es.ipw_ate(y, treat, propensity)
+
+    assert naive - true_ate > 0.3, "test setup should be visibly confounded"
+    assert abs(ipw - true_ate) < 0.02, f"IPW failed to recover the ATE (got {ipw})"
+    assert abs(ipw - true_ate) < abs(naive - true_ate) / 10
+
+
+def test_ipw_ate_equals_simple_difference_under_randomization():
+    """With a constant propensity there is nothing to correct, so IPW must
+    collapse to the plain difference in means."""
+    rng = np.random.default_rng(8)
+    n = 40_000
+    treat = rng.binomial(1, 0.5, n).astype(float)
+    y = rng.normal(0, 1, n) + 0.25 * treat
+    simple = y[treat == 1].mean() - y[treat == 0].mean()
+    assert abs(es.ipw_ate(y, treat, np.full(n, 0.5)) - simple) < 1e-12
+
+
+def test_ipw_ate_clips_extreme_propensities():
+    """A near-zero propensity would otherwise hand one unit unbounded weight."""
+    y = np.array([1.0, 0.0, 1.0, 0.0])
+    treat = np.array([1.0, 1.0, 0.0, 0.0])
+    wild = np.array([0.5, 0.5, 1e-9, 0.5])   # third unit would get weight ~1e9
+    assert np.isfinite(es.ipw_ate(y, treat, wild))
+
+
 def test_trapezoid_matches_known_integrals():
     """Locks the hand-written integral used by the Qini curve.
 

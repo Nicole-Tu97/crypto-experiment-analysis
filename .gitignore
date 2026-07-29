@@ -22,3 +22,6 @@ venv/
 # seeds/raw_users.csv
 # seeds/raw_activation.csv
 # seeds/raw_did_panel.csv
+
+# Downloaded public datasets (fetched on demand by src/real_data_validation.py)
+data/

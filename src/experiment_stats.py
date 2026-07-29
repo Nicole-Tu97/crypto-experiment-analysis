@@ -206,6 +206,38 @@ def variance_and_ci_reduction(se_before, halfwidth_before, se_after, halfwidth_a
 
 
 # --------------------------------------------------------------------------- #
+# Inverse-propensity weighting for the ATE
+# --------------------------------------------------------------------------- #
+def ipw_ate(y, treat, propensity, clip=(0.02, 0.98)):
+    """Inverse-propensity-weighted ATE: E[Y(1)] - E[Y(0)].
+
+    Each unit is weighted by the inverse of its probability of receiving the
+    treatment it actually got, which reweights the two groups to look like the
+    same covariate population. Weights are the Hajek (self-normalised) form --
+    dividing by the summed weights rather than by n -- because that is far more
+    stable than Horvitz-Thompson when some propensities are small.
+
+    `clip` enforces positivity: a unit with an estimated propensity of 0.001
+    would otherwise carry a weight of 1000 and dominate the estimate. Trimming
+    trades a little bias for a lot of variance, which is the right trade here.
+
+    Note this targets the ATE, not the ATT. Use it when the comparison benchmark
+    is a population-average effect (e.g. a randomized experiment's difference in
+    means); `run_observational` in analysis.py targets the ATT instead, because
+    there the question is about effects among the people who actually adopted.
+    """
+    y = np.asarray(y, dtype=float)
+    treat = np.asarray(treat, dtype=float)
+    e = np.clip(np.asarray(propensity, dtype=float), *clip)
+
+    w_t = treat / e
+    w_c = (1.0 - treat) / (1.0 - e)
+    mean_treated = np.sum(w_t * y) / np.sum(w_t)
+    mean_control = np.sum(w_c * y) / np.sum(w_c)
+    return float(mean_treated - mean_control)
+
+
+# --------------------------------------------------------------------------- #
 # Multiplicity control for exploratory subgroup analyses
 # --------------------------------------------------------------------------- #
 def benjamini_hochberg(p_values, alpha=0.05):

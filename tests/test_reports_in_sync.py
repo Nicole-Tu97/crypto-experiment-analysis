@@ -68,6 +68,53 @@ def test_decision_memo_matches_metrics():
     assert diff is None, diff + "\n\nRun: python3 src/run.py"
 
 
+def test_readme_real_data_numbers_match_the_json():
+    """The real-data section is hand-written prose, so its numbers can drift.
+
+    They already did once: two figures in that section were wrong within minutes
+    of being typed. The generated results block is protected by construction; this
+    section is not, so each headline number is checked against
+    outputs/real_data_validation.json explicitly.
+    """
+    path = os.path.join(ROOT, "outputs", "real_data_validation.json")
+    if not os.path.exists(path):
+        print("SKIP  real-data validation has not been run yet")
+        return
+    with open(path) as f:
+        rd = json.load(f)
+
+    ipw = rd["ipw_benchmark"]
+    rob = ipw["robustness_across_30_confounding_draws"]
+    integ = rd["integrity"]
+    lm = rd["uplift_model"]["learned_model"]
+    ref = rd["uplift_model"]["single_covariate_reference"]
+    cuped = rd["cuped"]
+
+    expected = {
+        "experimental benchmark": f"{ipw['experimental_benchmark']*100:+.3f}pp",
+        "naive on confounded": f"{ipw['naive_on_confounded']*100:+.3f}pp",
+        "ipw estimate": f"{ipw['ipw_estimate']*100:+.3f}pp",
+        "regression adjusted": f"{ipw['regression_adjusted_ame']*100:+.3f}pp",
+        "mean bias removed": f"{rob['mean_bias_removed_pct']:.1f}%",
+        "worst bias removed": f"{rob['worst_bias_removed_pct']:.1f}%",
+        "srm p-value": f"{integ['srm_primary_contrast']['p_value']:.3f}",
+        "max smd": f"{integ['max_abs_smd']:.3f}",
+        "uplift separation": f"{lm['separation_pp']*100:+.2f}pp",
+        "single-covariate separation": f"{ref['separation_pp']*100:+.2f}pp",
+        "cuped variance reduction": f"{cuped['variance_reduction_pct']:.2f}%",
+    }
+    readme = _read("README.md")
+    missing = {k: v for k, v in expected.items()
+               if v.lstrip("+") not in readme and v not in readme}
+    assert not missing, (
+        "README's real-data section disagrees with real_data_validation.json:\n"
+        + "\n".join(f"  {k}: expected to find {v!r}" for k, v in missing.items()))
+
+    # the covariate count is quoted in prose too
+    assert f"{len(integ['covariate_balance_smd'])} covariates" in readme, (
+        f"README should say '{len(integ['covariate_balance_smd'])} covariates'")
+
+
 def test_memo_decision_follows_the_preregistered_rule():
     """The memo's verdict must be the declared rule applied to the numbers,
     not a conclusion written independently of them."""
