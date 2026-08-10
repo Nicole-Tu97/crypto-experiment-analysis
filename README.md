@@ -277,7 +277,10 @@ seeds (raw_*)  →  models/staging/stg_*.sql  →  models/marts/mart_*.sql
   - `mart_experiment_users` — the flagship one-row-per-user analysis table
     (assignment, pre-period covariate, exposure, primary + guardrail metrics)
   - `mart_did_panel` — region × week panel ready for difference-in-differences
-- dbt data tests enforce uniqueness, not-null, and accepted values (23 tests pass).
+- dbt data tests enforce uniqueness, not-null, and accepted values (15 tests pass:
+  6 on the sources, 9 on the marts). The `accepted_values` tests are the ones that
+  earn their keep — a silently recoded outcome column is the failure mode that
+  invalidates an analysis without raising an error anywhere.
 
 `sql/build.sql` mirrors the same raw → staging → marts DAG in plain SQL so the
 project still runs end-to-end if dbt is unavailable. That mirroring is itself
@@ -416,7 +419,7 @@ of it into a crisp ship/hold recommendation with guardrails and a confidence lev
 
 | What the role needs | Where it is in this repo |
 |---|---|
-| SQL + modern data modelling | dbt project on DuckDB (`models/`), staging → marts, 23 dbt data tests |
+| SQL + modern data modelling | dbt project on DuckDB (`models/`), staging → marts, 15 dbt data tests |
 | Experimentation | SRM, covariate balance, power/MDE, CUPED, multiplicity control, peeking simulation |
 | Causal inference | IPW with overlap + regression cross-check, DiD with parallel-trends test and few-cluster inference |
 | Metrics + analytical frameworks | pre-registered metric hierarchy (primary / co-primary / guardrail) in `EXPERIMENT_PLAN.md`, `mart_experiment_users` as the single analysis table |
