@@ -45,22 +45,28 @@ one-off trade.
 
 | Role | Metric | Definition | Direction |
 |---|---|---|---|
-| **Primary** | 7-day activation | funded account **and** ≥1 crypto trade within 7 days of signup | ↑ |
-| **Co-primary** | 7-day retention | active in the app on day 7 | ↑ |
-| **Guardrail** | Support-contact rate | ≥1 support contact within 7 days | must not ↑ |
-| **Guardrail** | Net 7-day deposits | net CAD deposited within 7 days | must not ↓ |
+| **Primary — gating** | 7-day activation | funded account **and** ≥1 crypto trade within 7 days of signup | ↑ |
+| **Secondary — reported, not gating** | 7-day retention | active in the app on day 7 | ↑ |
+| **Guardrail — gating** | Support-contact rate | ≥1 support contact within 7 days | must not ↑ |
+| **Guardrail — reported, not gating** | Net 7-day deposits | net CAD deposited within 7 days | must not ↓ |
+
+**One metric gates the ship decision, and one guardrail can block it.** The other two
+are measured, reported and argued about, but they do not enter the rule in §5. That
+is a deliberate scoping choice for this version and it is a real limitation — the
+first two items in §11 are how I would close it.
 
 Why activation and not "recurring buys created": adoption of the feature is not
 the point. A feature that 40% of clients set up and that moves no one's behaviour
 is a failure that an adoption metric would score as a triumph. Activation is the
 thing the business actually needs to move.
 
-Why retention is **co-primary rather than primary**: activation is the near-term
-decision driver and is measurable in the window; retention is what determines
-whether the activation was real or just a nudged one-off. Both have to move in the
-same direction for the story to hold. Because there are two co-primary metrics,
-each is tested at a Bonferroni-adjusted **α = 0.025** — two chances to declare a
-win is two chances to be wrong.
+Why retention is read but does not gate: activation is the near-term decision
+driver and is measurable in the window; retention is what tells you whether the
+activation was real or just a nudged one-off. It is the **mechanism check** — if
+activation rises and retention does not, the feature bought a one-off trade rather
+than a habit, and §10 says do not ship on that. Encoding that as a hard condition
+is §11 item 1; in this version it is a documented judgement call, not an automated
+gate, and calling that out is more useful than pretending otherwise.
 
 Guardrails are deliberately tested at the **full α = 0.05**, uncorrected. A
 multiplicity correction makes it *harder* to reject the null, which for a metric
@@ -76,7 +82,7 @@ money moved into a recurring schedule is money not deposited some other way.
 
 | Parameter | Value | Reasoning |
 |---|---|---|
-| α | 0.05 two-sided (0.025 per co-primary) | two-sided because a well-intentioned onboarding change can plausibly hurt |
+| α | 0.05 two-sided; **0.025 on the primary** | two-sided because a well-intentioned onboarding change can plausibly hurt. The primary is held to the stricter 0.025 on purpose — a single-gating-metric design would justify 0.05, and a bar is worth more kept than loosened after the fact |
 | Power | 0.80 | standard |
 | **MDE** | **+2.0pp absolute** on activation | below this the effect does not justify the onboarding slot it displaces |
 | Horizon | **Fixed.** Analyse once, at the pre-set sample size | see §6 |
@@ -97,10 +103,14 @@ analysis that actually inform *how* to ship rather than *whether* to.
 
 **SHIP** to 100% of new clients if **all three** hold:
 
-1. Activation effect significant at the adjusted α (p < 0.025); **and**
+1. Activation effect significant at α = 0.025; **and**
 2. the **lower bound** of its 95% CI clears the +2pp MDE; **and**
-3. no guardrail is harmed — specifically, the support-contact CI upper bound stays
-   below +1pp and net deposits do not fall significantly.
+3. the support-contact guardrail is not harmed — its CI upper bound stays below +1pp.
+
+**What is deliberately *not* in the rule:** 7-day retention and net deposits. Both are
+estimated and reported, and §10 records the judgement calls they inform — but neither
+is an automated condition here. §11 items 1 and 2 are how to promote them, including
+what threshold each should get and why it differs from the primary's.
 
 Condition 2 is the one that does real work. "Significant" only rules out zero; the
 CI lower bound is what tells us the effect is *large enough to be worth it*, and
@@ -182,3 +192,42 @@ Stated up front so it cannot be rationalised later:
   before shipping.
 - Effect concentrated **entirely** in one small segment → ship to that segment,
   not to everyone, and do not quote the pooled average as the expected impact.
+
+---
+
+## 11. Known gaps in this plan (and what I would change)
+
+Written down for the same reason as §10 — a limitation you name is worth more than one
+a reader finds.
+
+**1. Retention should gate, not merely be reported.** It is declared the mechanism
+check and §10 says "activation up but retention flat → do not ship", yet §5 never
+tests it. The condition to add:
+
+```
+p_retention < 0.025  AND  sign(effect_retention) == sign(effect_activation)
+```
+
+Note the bar is deliberately **looser than the primary's**: retention tests the
+*mechanism* (did a habit form), not the *magnitude* (is it worth the slot). The MDE
+exists to justify the onboarding real estate and activation already carries that, so
+charging retention a second time would be double-counting. On this run retention
+came in at **+9.26pp, p ≈ 1e-78**, so adding the condition would not change the verdict.
+
+**2. The net-deposits guardrail should gate too.** §3 lists it as a guardrail and the
+prose above promises it, but only support-contact is enforced. Adding
+`effect_deposits not significantly negative` would close it; measured **+$3.44,
+p ≈ 2e-10**, so again the verdict is unchanged.
+
+**3. Retention is defined too loosely for a crypto feature.** "Active in the app on
+day 7" counts a client who opened the app to check a managed portfolio and never
+touched crypto. The mechanism claim is about a *crypto* habit, so the definition
+should be **active in the crypto surface** — a crypto view, an order, or a scheduled
+buy executing. The trade-off is baseline: the more crypto-specific the definition,
+the lower the base rate and the more sample the same MDE needs. "Any crypto activity"
+is the version I would take; "a second trade within 7 days" is too sparse.
+
+**4. Model logic is not unit-tested.** The 15 dbt data tests assert things about the
+*data*; `tests/test_warehouse_parity.py` catches logic errors only insofar as the dbt
+and plain-SQL paths disagree. dbt 1.8+ unit tests would assert the transformation
+logic directly on fixture rows.

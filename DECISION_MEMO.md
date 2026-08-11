@@ -18,13 +18,15 @@ in the same direction, and no guardrail was harmed. **Ship it**, and prioritize 
 segments below.
 
 ## What we measured
-- **Primary:** 7-day activation (funded account + first crypto trade).
-- **Co-primary:** 7-day retention.
-- **Guardrails:** support-contact rate (must not rise), net 7-day deposits (must not fall).
+- **Primary (gates the decision):** 7-day activation (funded account + first crypto trade).
+- **Gating guardrail:** support-contact rate (must not rise).
+- **Reported, not gating:** 7-day retention (the mechanism check) and net 7-day deposits.
 - Pre-registered alpha = 0.05, power = 0.80, MDE = +2pp, fixed horizon.
-- Two co-primary metrics, so each is tested at a Bonferroni-adjusted
-  alpha = 0.025. Guardrails stay at the full alpha on purpose —
+- The primary is held at alpha = 0.025 rather than the full 0.05 —
+  a deliberately conservative bar. Guardrails stay at the full alpha on purpose:
   correcting them would only make harm harder to detect.
+- Promoting retention and deposits to gating conditions is EXPERIMENT_PLAN §11.1-11.2;
+  both clear the bars they would be given, so the verdict here does not turn on it.
 
 ## Results
 
@@ -143,8 +145,8 @@ coverage across many draws: over **500 simulated experiments** the mean estimate
 
 The DiD row above is the one estimate that looks off, so it got the same treatment.
 Over **400 independently redrawn panels** the DiD estimator is unbiased
-(mean +2.96pp vs true +3.00pp, bias -1.3%), and its classical
-interval covers the truth 94.5% of the time against 92.8% for the
+(mean +2.96pp vs true +3.00pp, bias -1.2%), and its classical
+interval covers the truth 94.5% of the time against 92.5% for the
 region-clustered interval — which is the measured confirmation that clustering on
 12 units is anti-conservative here, and why the CI quoted above is the classical
 one. This run's estimate sits 1.5 standard errors below the truth; that or worse

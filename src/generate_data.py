@@ -112,7 +112,7 @@ def generate():
     u_adopt = rng.uniform(size=n)
     adopted = ((treat == 1) & (u_adopt < p_adopt)).astype(int)
 
-    # ===================== RETENTION (co-primary + DiD-style) ================
+    # ============ RETENTION (secondary / mechanism check + DiD-style) ========
     # 7-day retention depends on covariates, whether the user activated, and
     # (causally) whether they adopted recurring buy. Treatment also has a small
     # direct effect (access to the feature nudges habit formation).

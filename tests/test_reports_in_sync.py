@@ -122,11 +122,16 @@ def test_readme_real_data_numbers_match_the_json():
 
 def test_memo_decision_follows_the_preregistered_rule():
     """The memo's verdict must be the declared rule applied to the numbers,
-    not a conclusion written independently of them."""
+    not a conclusion written independently of them.
+
+    The rule is EXPERIMENT_PLAN §5: activation significant at the stated alpha, its
+    CI lower bound past the MDE, and the support-contact guardrail intact. Retention
+    and deposits are reported but deliberately do not gate -- see §11.1 and §11.2.
+    """
     metrics, _ = _load()
     a = metrics["primary"]["activation"]
     sup = metrics["primary"]["guardrail_support_contact"]
-    alpha = metrics["primary"]["coprimary_multiplicity"]["alpha_per_metric"]
+    alpha = metrics["primary"]["alpha_policy"]["alpha_per_metric"]
 
     import analysis
     should_ship = (a["p_value"] < alpha

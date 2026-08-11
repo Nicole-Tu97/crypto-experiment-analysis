@@ -243,7 +243,7 @@ def ipw_ate(y, treat, propensity, clip=(0.02, 0.98)):
 def benjamini_hochberg(p_values, alpha=0.05):
     """Benjamini-Hochberg FDR adjustment.
 
-    The primary/co-primary metrics are pre-registered, but segment-level CATEs
+    The primary metric is pre-registered, but segment-level CATEs
     are exploratory: testing 8 subgroups at alpha = 0.05 gives a ~34% chance of
     at least one false positive under the null. BH-adjusted q-values keep the
     expected false-discovery rate at alpha instead.

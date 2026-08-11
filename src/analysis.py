@@ -142,13 +142,16 @@ def run_primary_and_guardrails(users):
     # practical significance: does the CI lower bound clear the declared MDE?
     practically_significant = bool(activation.ci_low >= MDE_DECLARED)
 
-    # Two co-primary metrics means two chances to declare a win, so the family-
-    # wise error rate is controlled with Bonferroni (alpha/2 each). Guardrails
+    # One metric gates the decision (activation), so a single-metric design would
+    # justify the full alpha. The primary is held at alpha/2 anyway -- a bar kept is
+    # worth more than a bar loosened after the fact. Retention is estimated and
+    # reported as the mechanism check but does not gate; see EXPERIMENT_PLAN §11.1.
+    # Guardrails
     # are deliberately excluded: for a metric we are trying NOT to move, a
     # multiplicity correction only makes harm harder to detect.
     alpha_coprimary = ALPHA / 2
     coprimary = {
-        "correction": "Bonferroni over 2 co-primary metrics",
+        "policy": "primary held at alpha/2 deliberately; retention reported, not gating",
         "alpha_per_metric": alpha_coprimary,
         "activation_significant": bool(activation.p_value < alpha_coprimary),
         "retention_significant": bool(retention.p_value < alpha_coprimary),
@@ -177,7 +180,7 @@ def run_primary_and_guardrails(users):
     ax.set_yticks(list(ys))
     ax.set_yticklabels([r[0] for r in rows])
     ax.set_xlabel("Absolute effect (percentage points), 95% CI")
-    ax.set_title("Treatment effects: primary, co-primary, guardrail")
+    ax.set_title("Treatment effects: primary, secondary, guardrails")
     ax.legend(loc="lower right")
     ax.grid(axis="y", visible=False)
     ax.invert_yaxis()
@@ -198,7 +201,7 @@ def run_primary_and_guardrails(users):
         },
         "activation_bootstrap_ci": {"lo": b_lo, "hi": b_hi, "mean": b_mean},
         "practically_significant_vs_mde": practically_significant,
-        "coprimary_multiplicity": coprimary,
+        "alpha_policy": coprimary,
     }
 
 

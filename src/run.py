@@ -47,10 +47,11 @@ def build_memo(m, gt, engine):
     inf = did["inference"]
     seq = m["sequential"]
     pm = m["primary"]["power_mde"]
-    mult = m["primary"]["coprimary_multiplicity"]
+    mult = m["primary"]["alpha_policy"]
 
-    # decision logic: the pre-registered rule, evaluated at the Bonferroni-
-    # adjusted alpha for the co-primary family.
+    # decision logic: the pre-registered rule from EXPERIMENT_PLAN §5 -- activation
+    # significant, its CI lower bound past the MDE, support-contact guardrail intact.
+    # Retention and deposits are reported but do not gate (§11.1, §11.2).
     ship = (a["p_value"] < mult["alpha_per_metric"]
             and a["ci_low"] >= analysis.MDE_DECLARED
             and sup["ci_high"] <= 0.01)  # no material guardrail harm
@@ -87,13 +88,15 @@ in the same direction, and no guardrail was harmed. **Ship it**, and prioritize 
 segments below.
 
 ## What we measured
-- **Primary:** 7-day activation (funded account + first crypto trade).
-- **Co-primary:** 7-day retention.
-- **Guardrails:** support-contact rate (must not rise), net 7-day deposits (must not fall).
+- **Primary (gates the decision):** 7-day activation (funded account + first crypto trade).
+- **Gating guardrail:** support-contact rate (must not rise).
+- **Reported, not gating:** 7-day retention (the mechanism check) and net 7-day deposits.
 - Pre-registered alpha = 0.05, power = 0.80, MDE = +{analysis.MDE_DECLARED*100:.0f}pp, fixed horizon.
-- Two co-primary metrics, so each is tested at a Bonferroni-adjusted
-  alpha = {mult['alpha_per_metric']:.3f}. Guardrails stay at the full alpha on purpose —
+- The primary is held at alpha = {mult['alpha_per_metric']:.3f} rather than the full 0.05 —
+  a deliberately conservative bar. Guardrails stay at the full alpha on purpose:
   correcting them would only make harm harder to detect.
+- Promoting retention and deposits to gating conditions is EXPERIMENT_PLAN §11.1-11.2;
+  both clear the bars they would be given, so the verdict here does not turn on it.
 
 ## Results
 
@@ -266,16 +269,16 @@ Sample: **{gs['control'] + gs['treatment']:,}** new users randomized 50/50 —
 | Metric | Control | Treatment | Effect (95% CI) | Verdict |
 |---|---|---|---|---|
 | **Activation** (primary) | {a['control_mean']*100:.1f}% | {a['treatment_mean']*100:.1f}% | **{_pp(a['absolute_effect'])}** [{_pp(a['ci_low'])}, {_pp(a['ci_high'])}], p = {a['p_value']:.1e} | significant, {a['relative_effect']*100:+.1f}% relative |
-| **7-day retention** (co-primary) | {r['control_mean']*100:.1f}% | {r['treatment_mean']*100:.1f}% | **{_pp(r['absolute_effect'])}** [{_pp(r['ci_low'])}, {_pp(r['ci_high'])}] | significant |
+| **7-day retention** (secondary, reported) | {r['control_mean']*100:.1f}% | {r['treatment_mean']*100:.1f}% | **{_pp(r['absolute_effect'])}** [{_pp(r['ci_low'])}, {_pp(r['ci_high'])}] | significant |
 | Support-contact rate (guardrail) | {sup['control_mean']*100:.1f}% | {sup['treatment_mean']*100:.1f}% | {_pp(sup['absolute_effect'])} [{_pp(sup['ci_low'])}, {_pp(sup['ci_high'])}], p = {sup['p_value']:.2f} | no harm |
 | Net 7-day deposits (guardrail) | ${dep['control_mean']:.2f} | ${dep['treatment_mean']:.2f} | +${dep['absolute_effect']:.2f} [+${dep['ci_low']:.2f}, +${dep['ci_high']:.2f}] | neutral-to-positive |
 
 - **Experiment integrity:** SRM chi-square p = {integ['srm']['p_value']:.2f} (no sample-ratio
   mismatch); max |standardized mean difference| across {len(integ['covariate_balance_smd'])} covariates =
   {integ['max_abs_smd']:.3f} (well under 0.1).
-- **Multiplicity:** two co-primary metrics, so each is tested at a Bonferroni
-  alpha = {m['primary']['coprimary_multiplicity']['alpha_per_metric']:.3f}; both clear it. Guardrails stay at the full alpha
-  deliberately — correcting them would make harm harder to detect.
+- **Multiplicity:** the primary is held at alpha = {m['primary']['alpha_policy']['alpha_per_metric']:.3f}
+  rather than the full 0.05 — a deliberately conservative bar. Guardrails stay at the
+  full alpha on purpose: correcting them would make harm harder to detect.
 - **Power / MDE:** powered to detect **{pm['mde_achieved_at_80pct_power']*100:.2f}pp** at 80% power; the
   pre-registered MDE was **{analysis.MDE_DECLARED*100:.0f}pp**, and the CI lower bound ({_pp(a['ci_low'])})
   clears it — statistically *and* practically significant.

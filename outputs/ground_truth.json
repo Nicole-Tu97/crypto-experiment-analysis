@@ -1,9 +1,9 @@
 {
   "seed": 20240700,
   "n_users": 40000,
-  "true_ate_activation": 0.07690165802747283,
+  "true_ate_activation": 0.07690165802747286,
   "true_ate_retention_itt": 0.09313087158974584,
-  "true_ate_support_contact": 0.0027656292715492192,
+  "true_ate_support_contact": 0.0027656292715492197,
   "true_ate_net_deposits": 3.4621947708700054,
   "true_adoption_effect_on_retention_att": 0.13081119276429767,
   "true_did_effect": 0.03,
