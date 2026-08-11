@@ -127,8 +127,11 @@
         "support_contact_not_harmed": true,
         "deposits_not_harmed": true
       },
+      "co_primaries_pass": true,
+      "guardrails_pass": true,
+      "decision": "SHIP",
       "ship": true,
-      "rule": "SHIP iff both co-primaries clear alpha/2 and agree in sign, activation's CI lower bound clears the MDE, and neither guardrail is harmed at the full alpha."
+      "rule": "SHIP iff both co-primaries clear alpha/2 and agree in sign, activation's CI lower bound clears the MDE, and neither guardrail is harmed at the full alpha. Co-primaries pass but a guardrail is harmed -> HOLD pending a fix. Otherwise ITERATE."
     }
   },
   "cuped": {

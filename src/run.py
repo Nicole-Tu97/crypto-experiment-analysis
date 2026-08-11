@@ -53,7 +53,7 @@ def build_memo(m, gt, engine):
     # analysis.decision_rule(), and read from here -- not re-implemented.
     rule = m["primary"]["decision_rule"]
     ship = rule["ship"]
-    decision = "SHIP" if ship else "ITERATE"
+    decision = rule["decision"]
 
     # best segment among those that survive the BH multiplicity correction
     seg = het["segment_cate"]
@@ -122,8 +122,10 @@ observed effect).
 **Precision:** CUPED using the pre-signup onboarding-engagement covariate
 (outcome-covariate corr = {cuped['corr_outcome_covariate']:.2f}) cut the *variance* of the
 estimate by **{cuped['variance_reduction_pct']:.1f}%**, which narrows the confidence interval by
-**{cuped['ci_width_reduction_pct']:.1f}%** ({cuped['ci_halfwidth_unadjusted_pp']:.2f}pp → {cuped['ci_halfwidth_cuped_pp']:.2f}pp half-width) with no
-change to the point estimate. Those are two different numbers and the CI one is
+**{cuped['ci_width_reduction_pct']:.1f}%** ({cuped['ci_halfwidth_unadjusted_pp']:.2f}pp → {cuped['ci_halfwidth_cuped_pp']:.2f}pp half-width). The point
+estimate moves only slightly ({_pp(cuped['unadjusted']['absolute_effect'])} → {_pp(cuped['cuped_adjusted']['absolute_effect'])}) — theta also absorbs a
+small residual imbalance in the covariate, so the shift is a fraction of a standard
+error rather than the exact invariance the textbook case describes. Those are two different numbers and the CI one is
 what matters for a decision — the interval is proportional to the standard error,
 so it improves by roughly half the variance figure.
 
@@ -356,6 +358,19 @@ def main():
     metrics["ground_truth"] = gt
     metrics["warehouse_engine"] = engine
     metrics["integrity"] = analysis.run_integrity(users)
+
+    # Integrity gate, before a single outcome is read. A sample-ratio mismatch means
+    # assignment or logging is broken, which makes every effect downstream a
+    # measurement of the bug rather than of the feature -- so there is nothing to
+    # gain by computing them. Stopping here is the whole point of checking first.
+    srm = metrics["integrity"]["srm"]
+    if srm["srm_flag"]:
+        raise SystemExit(
+            f"SRM detected: observed treatment share {srm['observed_treat_share']:.4f} "
+            f"vs expected {srm['expected_treat_share']:.2f}, chi2 p = {srm['p_value']:.2g} "
+            "< 0.001. Analysis halted before any outcome was read -- fix assignment or "
+            "logging first (EXPERIMENT_PLAN §7).")
+
     metrics["primary"] = analysis.run_primary_and_guardrails(users)
     metrics["cuped"] = analysis.run_cuped(users)
     metrics["heterogeneity"] = analysis.run_heterogeneity(users)

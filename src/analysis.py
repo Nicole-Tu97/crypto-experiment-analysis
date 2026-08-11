@@ -228,12 +228,35 @@ def decision_rule(activation, retention, support, deposits, alpha_coprimary, alp
         "deposits_not_harmed": bool(
             not (deposits.absolute_effect < 0 and deposits.p_value < alpha_guardrail)),
     }
+    # The three outcomes are not degrees of the same verdict -- they point at
+    # different next actions. Co-primaries failing means the feature did not earn the
+    # slot, so the feature changes. Guardrails failing with the co-primaries intact
+    # means the feature works and something around it does harm, so that gets fixed
+    # and the test is re-run. Collapsing HOLD into ITERATE sends the team to rewrite a
+    # feature that was fine.
+    effect = ["activation_significant", "activation_clears_mde",
+              "retention_significant_and_same_sign"]
+    guard = ["support_contact_not_harmed", "deposits_not_harmed"]
+    effect_ok = all(conditions[k] for k in effect)
+    guards_ok = all(conditions[k] for k in guard)
+
+    if effect_ok and guards_ok:
+        decision = "SHIP"
+    elif effect_ok:
+        decision = "HOLD"      # works, but harms a guardrail: fix the harm, re-test
+    else:
+        decision = "ITERATE"   # the effect or the mechanism is not there: change the feature
+
     return {
         "conditions": conditions,
-        "ship": bool(all(conditions.values())),
+        "co_primaries_pass": bool(effect_ok),
+        "guardrails_pass": bool(guards_ok),
+        "decision": decision,
+        "ship": bool(decision == "SHIP"),
         "rule": ("SHIP iff both co-primaries clear alpha/2 and agree in sign, "
                  "activation's CI lower bound clears the MDE, and neither guardrail "
-                 "is harmed at the full alpha."),
+                 "is harmed at the full alpha. Co-primaries pass but a guardrail is "
+                 "harmed -> HOLD pending a fix. Otherwise ITERATE."),
     }
 
 

@@ -58,8 +58,10 @@ observed effect).
 **Precision:** CUPED using the pre-signup onboarding-engagement covariate
 (outcome-covariate corr = 0.29) cut the *variance* of the
 estimate by **8.2%**, which narrows the confidence interval by
-**4.2%** (0.95pp → 0.91pp half-width) with no
-change to the point estimate. Those are two different numbers and the CI one is
+**4.2%** (0.95pp → 0.91pp half-width). The point
+estimate moves only slightly (+7.76pp → +7.63pp) — theta also absorbs a
+small residual imbalance in the covariate, so the shift is a fraction of a standard
+error rather than the exact invariance the textbook case describes. Those are two different numbers and the CI one is
 what matters for a decision — the interval is proportional to the standard error,
 so it improves by roughly half the variance figure.
 

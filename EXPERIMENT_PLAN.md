@@ -129,8 +129,17 @@ Note the asymmetry in conditions 4 and 5: guardrails are judged by the side of t
 interval that would reveal harm, not by the point estimate. "No measured change" is
 not the same as "no change".
 
-Otherwise **ITERATE** — and if activation clears the bar but a guardrail is
-harmed, that is a hold pending a fix, not a ship with a footnote.
+Otherwise the verdict is one of two things, and the difference matters because they
+send you to fix different things:
+
+- **HOLD** — conditions 1–3 pass but 4 or 5 does not. The feature works and something
+  around it does harm. Fix the harm and re-run; do not touch the feature, and do not
+  ship with a footnote.
+- **ITERATE** — conditions 1, 2 or 3 fail. The effect is not big enough, or activation
+  moved without retention following, so the feature did not earn the slot. Change the
+  feature.
+
+Collapsing HOLD into ITERATE sends the team to rewrite something that was fine.
 
 ## 6. Why a fixed horizon
 
@@ -149,7 +158,7 @@ design, because the costs are asymmetric.
 
 | Threat | Why it matters here | Mitigation |
 |---|---|---|
-| **Sample-ratio mismatch** | silent assignment or logging bugs invalidate everything downstream | SRM χ² before any outcome is read; p < 0.001 halts the analysis |
+| **Sample-ratio mismatch** | silent assignment or logging bugs invalidate everything downstream | SRM χ² before any outcome is read; p < 0.001 raises and halts the pipeline (`src/run.py`, before the primary is computed) |
 | **Novelty effect** | a new onboarding card gets clicked because it is new | 7-day window is short enough to be vulnerable — flagged as a limitation; 30/90-day post-launch monitoring is part of the ship plan |
 | **Short window** | habit features compound; 7 days undercounts the true effect | treat as a **lower** bound, do not extrapolate |
 | **Peeking** | inflates Type I error to ~20% | fixed horizon (§6) |
