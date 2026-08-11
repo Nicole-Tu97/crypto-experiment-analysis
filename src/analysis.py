@@ -208,9 +208,9 @@ def run_primary_and_guardrails(users):
 def decision_rule(activation, retention, support, deposits, alpha_coprimary, alpha_guardrail):
     """EXPERIMENT_PLAN §5, evaluated in exactly one place.
 
-    Every gating condition lives here so the memo, the README and the sync test
-    cannot drift apart -- an earlier version had the rule written out twice and the
-    two copies disagreed about which metrics gate.
+    Every gating condition lives here so the memo, the README and the sync test cannot
+    drift apart. Callers read this result or recompute it from the stored effects; none
+    of them restates the rule.
 
     Both co-primaries must clear the Bonferroni-adjusted alpha AND move in the same
     direction; retention is the mechanism check, so it needs a matching sign but not

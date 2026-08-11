@@ -115,10 +115,10 @@ analysis that actually inform *how* to ship rather than *whether* to.
 4. **Support-contact** guardrail not harmed: its CI **upper** bound stays below +1pp; **and**
 5. **Net deposits** guardrail not harmed: no significant fall at the full α = 0.05.
 
-All five are evaluated in one place — `analysis.decision_rule()` — and the memo, the
-README results block and `tests/test_reports_in_sync.py` all read or independently
-recompute that single definition rather than restating it. An earlier version had the
-rule written out twice and the two copies disagreed about which metrics gate.
+All five are evaluated in one place — `analysis.decision_rule()`. The memo, the README
+results block and `tests/test_reports_in_sync.py` read or independently recompute that
+single definition rather than restating it, so no copy of the rule can drift from
+another.
 
 Condition 2 is the one that does real work on *magnitude*. "Significant" only rules
 out zero; the CI lower bound is what tells us the effect is *large enough to be worth
