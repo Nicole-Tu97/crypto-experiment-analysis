@@ -255,10 +255,12 @@ two optional paths do — the AI summary layer below (off unless you ask for it)
 `src/real_data_validation.py`, which downloads the public Hillstrom dataset on first
 run and caches it under `data/`.
 
-**How reproducible, precisely.** The seeded data generation is stable across
-library versions — `numpy.random.Generator` guarantees its stream, so the
-synthetic dataset and every closed-form statistic (effects, CIs, p-values, SRM,
-CUPED, IPW, DiD) reproduce to display precision on NumPy 2.0 through 2.5. The one
+**How reproducible, precisely.** Reproducibility here is measured, not assumed.
+NumPy guarantees stream compatibility for the legacy `RandomState` but explicitly
+declines to for `Generator`, which this project uses — so the claim rests on having
+checked rather than on a promise. Checked: the synthetic dataset and every closed-form
+statistic (effects, CIs, p-values, SRM, CUPED, IPW, DiD) reproduce to display precision
+on NumPy 2.0 through 2.5. The one
 number that moves is the uplift model's Qini coefficient, which shifts in the
 third decimal (0.1484 → 0.1486) with the scikit-learn version, because
 gradient-boosting internals change between releases. Everything else differs only
