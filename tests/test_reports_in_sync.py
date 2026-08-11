@@ -129,14 +129,26 @@ def test_memo_decision_follows_the_preregistered_rule():
     and deposits are reported but deliberately do not gate -- see §11.1 and §11.2.
     """
     metrics, _ = _load()
+    rule = metrics["primary"]["decision_rule"]
+
+    # recompute independently from the stored effect estimates, so a bug in
+    # decision_rule() cannot hide behind its own output
+    alpha_c = metrics["primary"]["alpha_policy"]["alpha_per_metric"]
+    alpha_g = metrics["primary"]["alpha_policy"]["alpha_guardrail"]
     a = metrics["primary"]["activation"]
+    r = metrics["primary"]["retention"]
     sup = metrics["primary"]["guardrail_support_contact"]
-    alpha = metrics["primary"]["alpha_policy"]["alpha_per_metric"]
+    dep = metrics["primary"]["guardrail_net_deposits"]
 
     import analysis
-    should_ship = (a["p_value"] < alpha
+    should_ship = (a["p_value"] < alpha_c
                    and a["ci_low"] >= analysis.MDE_DECLARED
-                   and sup["ci_high"] <= 0.01)
+                   and r["p_value"] < alpha_c
+                   and (r["absolute_effect"] > 0) == (a["absolute_effect"] > 0)
+                   and sup["ci_high"] <= 0.01
+                   and not (dep["absolute_effect"] < 0 and dep["p_value"] < alpha_g))
+    assert should_ship == rule["ship"], \
+        "stored decision_rule disagrees with an independent recomputation"
     memo = _read("DECISION_MEMO.md")
     assert ("**SHIP**" in memo) == should_ship, \
         "memo verdict disagrees with the pre-registered decision rule"

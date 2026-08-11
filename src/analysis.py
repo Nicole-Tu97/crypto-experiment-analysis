@@ -142,17 +142,15 @@ def run_primary_and_guardrails(users):
     # practical significance: does the CI lower bound clear the declared MDE?
     practically_significant = bool(activation.ci_low >= MDE_DECLARED)
 
-    # One metric gates the decision (activation), so a single-metric design would
-    # justify the full alpha. The primary is held at alpha/2 anyway -- a bar kept is
-    # worth more than a bar loosened after the fact. Retention is estimated and
-    # reported as the mechanism check but does not gate; see EXPERIMENT_PLAN §11.1.
-    # Guardrails
-    # are deliberately excluded: for a metric we are trying NOT to move, a
-    # multiplicity correction only makes harm harder to detect.
+    # Two co-primary metrics means two chances to declare a win, so the family-wise
+    # error rate is controlled with Bonferroni (alpha/2 each). Both are gating -- see
+    # decision_rule() below. Guardrails are deliberately left uncorrected: for a
+    # metric we are trying NOT to move, a correction only makes harm harder to detect.
     alpha_coprimary = ALPHA / 2
     coprimary = {
-        "policy": "primary held at alpha/2 deliberately; retention reported, not gating",
+        "policy": "Bonferroni over 2 gating co-primary metrics; guardrails uncorrected",
         "alpha_per_metric": alpha_coprimary,
+        "alpha_guardrail": ALPHA,
         "activation_significant": bool(activation.p_value < alpha_coprimary),
         "retention_significant": bool(retention.p_value < alpha_coprimary),
         "note": ("Guardrails are tested at the full alpha on purpose: "
@@ -202,6 +200,40 @@ def run_primary_and_guardrails(users):
         "activation_bootstrap_ci": {"lo": b_lo, "hi": b_hi, "mean": b_mean},
         "practically_significant_vs_mde": practically_significant,
         "alpha_policy": coprimary,
+        "decision_rule": decision_rule(activation, retention, support, deposits,
+                                       alpha_coprimary, ALPHA),
+    }
+
+
+def decision_rule(activation, retention, support, deposits, alpha_coprimary, alpha_guardrail):
+    """EXPERIMENT_PLAN §5, evaluated in exactly one place.
+
+    Every gating condition lives here so the memo, the README and the sync test
+    cannot drift apart -- an earlier version had the rule written out twice and the
+    two copies disagreed about which metrics gate.
+
+    Both co-primaries must clear the Bonferroni-adjusted alpha AND move in the same
+    direction; retention is the mechanism check, so it needs a matching sign but not
+    the MDE, which exists to justify the onboarding slot and is carried by activation.
+    Guardrails are judged at the full alpha, and by the side of the interval that
+    would show harm -- "no measured change" is not the same as "no change".
+    """
+    same_sign = (retention.absolute_effect > 0) == (activation.absolute_effect > 0)
+    conditions = {
+        "activation_significant": bool(activation.p_value < alpha_coprimary),
+        "activation_clears_mde": bool(activation.ci_low >= MDE_DECLARED),
+        "retention_significant_and_same_sign": bool(
+            retention.p_value < alpha_coprimary and same_sign),
+        "support_contact_not_harmed": bool(support.ci_high <= 0.01),
+        "deposits_not_harmed": bool(
+            not (deposits.absolute_effect < 0 and deposits.p_value < alpha_guardrail)),
+    }
+    return {
+        "conditions": conditions,
+        "ship": bool(all(conditions.values())),
+        "rule": ("SHIP iff both co-primaries clear alpha/2 and agree in sign, "
+                 "activation's CI lower bound clears the MDE, and neither guardrail "
+                 "is harmed at the full alpha."),
     }
 
 

@@ -128,16 +128,18 @@ Sample: **40,000** new users randomized 50/50 —
 | Metric | Control | Treatment | Effect (95% CI) | Verdict |
 |---|---|---|---|---|
 | **Activation** (primary) | 34.1% | 41.8% | **+7.76pp** [+6.82pp, +8.71pp], p = 1.4e-57 | significant, +22.8% relative |
-| **7-day retention** (secondary, reported) | 37.0% | 46.2% | **+9.26pp** [+8.29pp, +10.22pp] | significant |
+| **7-day retention** (co-primary) | 37.0% | 46.2% | **+9.26pp** [+8.29pp, +10.22pp] | significant |
 | Support-contact rate (guardrail) | 10.2% | 10.3% | +0.12pp [-0.47pp, +0.72pp], p = 0.69 | no harm |
 | Net 7-day deposits (guardrail) | $68.55 | $71.98 | +$3.44 [+$2.38, +$4.49] | neutral-to-positive |
 
 - **Experiment integrity:** SRM chi-square p = 0.37 (no sample-ratio
   mismatch); max |standardized mean difference| across 10 covariates =
   0.016 (well under 0.1).
-- **Multiplicity:** the primary is held at alpha = 0.025
-  rather than the full 0.05 — a deliberately conservative bar. Guardrails stay at the
-  full alpha on purpose: correcting them would make harm harder to detect.
+- **Multiplicity:** two gating co-primary metrics, so each is tested at a Bonferroni
+  alpha = 0.025; both clear it. Guardrails stay at the full
+  alpha on purpose: correcting them would make harm harder to detect.
+- **Decision rule:** all 5 gating conditions pass — see `analysis.decision_rule`,
+  which both the memo and this block read rather than re-deriving.
 - **Power / MDE:** powered to detect **1.33pp** at 80% power; the
   pre-registered MDE was **2pp**, and the CI lower bound (+6.82pp)
   clears it — statistically *and* practically significant.
@@ -325,20 +327,17 @@ ANTHROPIC_API_KEY=... USE_LLM=1 python3 src/run.py
 ## Methods
 
 Pre-registered in [`EXPERIMENT_PLAN.md`](EXPERIMENT_PLAN.md) before looking at
-outcomes: **primary (gating)** = activation, **secondary (reported)** = retention,
-**gating guardrail** = support contact, **reported guardrail** = deposits,
-α = 0.05 two-sided with 0.025 on the primary, power = 0.80, MDE = 2pp, decision
-rule = ship if activation is significant, its CI lower bound clears the MDE, and
-the support-contact guardrail is intact. Promoting retention and deposits to gating
-conditions is written up as [§11 of the plan](EXPERIMENT_PLAN.md) — both would pass,
-so the verdict does not turn on it.
+outcomes: **co-primary** = activation + retention, **guardrails** = support contact +
+deposits, α = 0.05 two-sided (0.025 per co-primary, full 0.05 on guardrails),
+power = 0.80, MDE = 2pp. **All four metrics gate the decision** — the five-condition
+rule is in [§5 of the plan](EXPERIMENT_PLAN.md) and evaluated in exactly one place,
+`analysis.decision_rule()`. Nothing here is measured for decoration.
 
 - **Experiment integrity** — group sizes, SRM chi-square, covariate balance (SMD).
 - **ATE** — two-proportion z-test with a Wald CI (unpooled SE for the interval,
   pooled SE for the test), a bootstrap CI as a robustness check, and a power/MDE
   calculation; practical significance judged against the declared MDE.
-- **Multiplicity** — the primary is held at α = 0.025 rather than 0.05, a
-  deliberately conservative bar;
+- **Multiplicity** — Bonferroni across the two gating co-primary metrics;
   Benjamini-Hochberg FDR across the exploratory segment CATEs. Guardrails are
   left **uncorrected** on purpose: correcting a metric you are trying not to move
   only makes harm harder to detect.
@@ -426,7 +425,7 @@ of it into a crisp ship/hold recommendation with guardrails and a confidence lev
 | SQL + modern data modelling | dbt project on DuckDB (`models/`), staging → marts, 15 dbt data tests |
 | Experimentation | SRM, covariate balance, power/MDE, CUPED, multiplicity control, peeking simulation |
 | Causal inference | IPW with overlap + regression cross-check, DiD with parallel-trends test and few-cluster inference |
-| Metrics + analytical frameworks | pre-registered metric hierarchy (gating primary / reported secondary / guardrails) in `EXPERIMENT_PLAN.md`, `mart_experiment_users` as the single analysis table |
+| Metrics + analytical frameworks | pre-registered metric hierarchy (co-primary / guardrail), every metric gating in `EXPERIMENT_PLAN.md`, `mart_experiment_users` as the single analysis table |
 | Influencing decisions | `DECISION_MEMO.md` with an explicit decision rule, `outputs/exec_summary.md` for a non-technical audience |
 | Product thinking | the memo argues about onboarding real estate and habit formation, not p-values; the MDE is set as a product judgment |
 | Using AI tools | `src/ai_summary.py` — LLM for language, mechanical guardrail for numbers |

@@ -112,11 +112,23 @@
     },
     "practically_significant_vs_mde": true,
     "alpha_policy": {
-      "policy": "primary held at alpha/2 deliberately; retention reported, not gating",
+      "policy": "Bonferroni over 2 gating co-primary metrics; guardrails uncorrected",
       "alpha_per_metric": 0.025,
+      "alpha_guardrail": 0.05,
       "activation_significant": true,
       "retention_significant": true,
       "note": "Guardrails are tested at the full alpha on purpose: correcting them would raise the bar for detecting harm."
+    },
+    "decision_rule": {
+      "conditions": {
+        "activation_significant": true,
+        "activation_clears_mde": true,
+        "retention_significant_and_same_sign": true,
+        "support_contact_not_harmed": true,
+        "deposits_not_harmed": true
+      },
+      "ship": true,
+      "rule": "SHIP iff both co-primaries clear alpha/2 and agree in sign, activation's CI lower bound clears the MDE, and neither guardrail is harmed at the full alpha."
     }
   },
   "cuped": {

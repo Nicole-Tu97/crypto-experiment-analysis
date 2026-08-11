@@ -18,15 +18,27 @@ in the same direction, and no guardrail was harmed. **Ship it**, and prioritize 
 segments below.
 
 ## What we measured
-- **Primary (gates the decision):** 7-day activation (funded account + first crypto trade).
-- **Gating guardrail:** support-contact rate (must not rise).
-- **Reported, not gating:** 7-day retention (the mechanism check) and net 7-day deposits.
+- **Co-primary (both gate the decision):** 7-day activation (funded account + first
+  crypto trade) and 7-day retention (active on day 7 — the mechanism check).
+- **Guardrails (both gate):** support-contact rate (must not rise), net 7-day deposits
+  (must not fall).
 - Pre-registered alpha = 0.05, power = 0.80, MDE = +2pp, fixed horizon.
-- The primary is held at alpha = 0.025 rather than the full 0.05 —
-  a deliberately conservative bar. Guardrails stay at the full alpha on purpose:
+- Two co-primary metrics, so each is tested at a Bonferroni-adjusted
+  alpha = 0.025. Guardrails stay at the full alpha on purpose —
   correcting them would only make harm harder to detect.
-- Promoting retention and deposits to gating conditions is EXPERIMENT_PLAN §11.1-11.2;
-  both clear the bars they would be given, so the verdict here does not turn on it.
+- Retention needs significance and a matching sign, **not** the MDE: it tests the
+  *mechanism*, not the *magnitude*, and the MDE exists to justify the onboarding slot,
+  which activation already carries.
+
+**The rule, condition by condition** (evaluated in `analysis.decision_rule`):
+
+| Condition | Result |
+|---|---|
+| `activation_significant` | PASS |
+| `activation_clears_mde` | PASS |
+| `retention_significant_and_same_sign` | PASS |
+| `support_contact_not_harmed` | PASS |
+| `deposits_not_harmed` | PASS |
 
 ## Results
 
